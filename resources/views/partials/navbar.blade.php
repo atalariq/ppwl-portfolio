@@ -5,7 +5,7 @@
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'font-semibold underline' : '' }}">Home</a>
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'font-semibold underline' : '' }}">About</a>
             <a href="{{ route('education') }}" class="{{ request()->routeIs('education') ? 'font-semibold underline' : '' }}">Education</a>
-            <a href="{{ route('projects') }}" class="{{ request()->routeIs('projects') ? 'font-semibold underline' : '' }}">Projects</a>
+            <a href="{{ route('projects.index') }}" class="{{ request()->routeIs('projects.*') ? 'font-semibold underline' : '' }}">Projects</a>
         </div>
     </div>
 </nav>

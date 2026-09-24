@@ -9,7 +9,7 @@
 
     <div class="mt-6 flex gap-3">
         <a href="{{ route('about') }}" class="rounded bg-gray-900 px-4 py-2 text-sm text-white">About Me</a>
-        <a href="{{ route('projects') }}" class="rounded border px-4 py-2 text-sm">View Projects</a>
+        <a href="{{ route('projects.index') }}" class="rounded border px-4 py-2 text-sm">View Projects</a>
     </div>
 
     <ul class="mt-6 space-y-1 text-sm text-gray-600">
