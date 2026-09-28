@@ -29,14 +29,14 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'       => 'required|max:200',
-            'repo'        => 'required|max:200',
-            'description' => 'required',
+            'title' => 'required|min:5|max:200',
+            'repo' => 'required|max:200',
+            'description' => 'required|min:10',
         ]);
 
         Project::create($request->only(['title', 'repo', 'description']));
 
-        return redirect()->route('projects.index');
+        return redirect()->route('projects.index')->with('success', 'Project created successfully.');
     }
 
     /**
@@ -50,24 +50,34 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Project $project)
     {
-        //
+        return view('projects.edit', ['project' => $project]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Project $project)
     {
-        //
+        $request->validate([
+            'title' => 'required|min:5|max:200',
+            'repo' => 'required|max:200',
+            'description' => 'required|min:10',
+        ]);
+
+        $project->update($request->only(['title', 'repo', 'description']));
+
+        return redirect()->route('projects.show', $project)->with('success', 'Project updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Project $project)
     {
-        //
+        $project->delete();
+
+        return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
     }
 }

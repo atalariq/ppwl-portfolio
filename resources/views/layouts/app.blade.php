@@ -10,6 +10,10 @@
     @include('partials.navbar')
 
     <main class="mx-auto max-w-4xl px-4 py-8 grow">
+        @if (session('success'))
+            <div class="mb-4 rounded border border-green-300 bg-green-50 px-4 py-2 text-sm text-green-800">{{ session('success') }}</div>
+        @endif
+
         @yield('content')
     </main>
 
