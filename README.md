@@ -7,6 +7,15 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Getting started
+
+Clone the repo, run the setup script for your OS, then start the app. [SETUP.md](SETUP.md) has the full instructions, including Windows/Herd and macOS/lerd notes.
+
+```sh
+composer run setup   # or: bash setup.sh / .\setup.ps1
+php artisan serve
+```
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

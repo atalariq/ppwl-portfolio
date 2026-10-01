@@ -1,5 +1,5 @@
 domains:
-  - my-portfolio
+  - ppwl-my-portfolio
 php_version: "8.5"
 node_version: "24"
 framework: laravel
@@ -7,3 +7,5 @@ framework_version: "13"
 secured: true
 services:
   - mysql
+workers:
+  - vite
