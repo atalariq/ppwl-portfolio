@@ -1,0 +1,6 @@
+# Nix-based toolchain for this repository (optional).
+# On Windows use Herd and on non-Nix systems use Lerd or the manual setup
+# in SETUP.md; nothing in this file is required for those workflows.
+inputs:
+  nixpkgs:
+    url: github:NixOS/nixpkgs/nixos-unstable

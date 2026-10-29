@@ -12,6 +12,8 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
+        Project::truncate();
+
         $projects = [
             ['title' => 'Menu Catalog API', 'repo' => 'atalariq/menu-api', 'description' => 'Functional backend API built collaboratively in GDGoC UGM.'],
             ['title' => 'Sift - AI Recruitment Screening', 'repo' => 'atalariq/sift', 'description' => 'AI recruitment screening & talent matching platform.'],
