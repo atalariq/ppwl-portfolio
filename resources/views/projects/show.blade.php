@@ -9,12 +9,14 @@
 
     <div class="mt-6 flex items-center gap-4">
         <a href="{{ route('projects.index') }}" class="text-sm font-medium text-blue-600">Back to Projects</a>
-        <a href="{{ route('projects.edit', $project) }}" class="text-sm font-medium text-blue-600">Edit</a>
-        <form action="{{ route('projects.destroy', $project) }}" method="POST" data-confirm="Delete this project?">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="text-sm font-medium text-red-600">Delete</button>
-        </form>
+        @auth
+            <a href="{{ route('projects.edit', $project) }}" class="text-sm font-medium text-blue-600">Edit</a>
+            <form action="{{ route('projects.destroy', $project) }}" method="POST" data-confirm="Delete this project?">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="text-sm font-medium text-red-600">Delete</button>
+            </form>
+        @endauth
     </div>
 
     @push('scripts')

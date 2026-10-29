@@ -5,7 +5,9 @@
 @section('content')
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">Projects</h1>
-        <a href="{{ route('projects.create') }}" class="text-sm font-medium text-blue-600">Add Project</a>
+        @auth
+            <a href="{{ route('projects.create') }}" class="text-sm font-medium text-blue-600">Add Project</a>
+        @endauth
     </div>
 
     <form method="GET" action="{{ route('projects.index') }}" class="mt-4 flex flex-wrap items-end gap-3 text-sm">

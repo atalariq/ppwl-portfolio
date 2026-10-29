@@ -3,12 +3,24 @@
 namespace Tests\Feature;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ProjectCrudTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::create([
+            'name' => 'Test User',
+            'email' => 'crud-test@example.com',
+            'password' => 'rahasia123',
+        ]));
+    }
 
     public function test_store_creates_project_and_flashes_message(): void
     {

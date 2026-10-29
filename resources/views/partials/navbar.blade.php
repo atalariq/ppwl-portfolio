@@ -6,6 +6,15 @@
             <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'font-semibold underline' : '' }}">About</a>
             <a href="{{ route('education') }}" class="{{ request()->routeIs('education') ? 'font-semibold underline' : '' }}">Education</a>
             <a href="{{ route('projects.index') }}" class="{{ request()->routeIs('projects.*') ? 'font-semibold underline' : '' }}">Projects</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'font-semibold underline' : '' }}">Dashboard</a>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="cursor-pointer underline-offset-2 hover:underline">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'font-semibold underline' : '' }}">Login</a>
+            @endauth
         </div>
     </div>
 </nav>
