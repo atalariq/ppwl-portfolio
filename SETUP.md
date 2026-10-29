@@ -107,6 +107,19 @@ lerd framework setup
 
 lerd writes a `.env` that points at `lerd-mysql` and friends. That file is gitignored, so nothing lerd-specific is committed.
 
+### Linux/NixOS with devenv
+
+The repository also ships a Nix-based environment (`devenv.nix`, `devenv.yaml`,
+`devenv.lock`). It provides PHP 8.5, Composer, Node 24, and MariaDB on port 33060
+plus Laravel/Vite processes:
+
+```sh
+devenv up -d     # services + app; run `devenv down` to stop
+```
+
+A gitignored `.env.local` is generated for the devenv database; `.env` is never
+modified. See the "devenv on Linux" section of the README for details.
+
 ### Plain PHP
 
 `php artisan serve` is enough. Make sure the `pdo_sqlite` extension is enabled, which it is by default.
