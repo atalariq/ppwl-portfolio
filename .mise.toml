@@ -1,6 +1,6 @@
 [tools]
 php = "8.5.12"
-node = "24"
+node = "24.21.0"
 
 [tasks.setup]
 description = "Install dependencies, start the database, migrate, and build assets"
@@ -34,7 +34,7 @@ description = "Start MariaDB with Podman or Docker Compose"
 run = """
 set -eu
 if command -v podman-compose >/dev/null 2>&1; then
-  podman-compose -f compose.yaml up -d db
+  podman-compose -p ppwl-dev -f compose.yaml up -d db
 elif command -v podman >/dev/null 2>&1; then
   podman compose up -d db
 else
@@ -47,7 +47,7 @@ description = "Stop the local database container"
 run = """
 set -eu
 if command -v podman-compose >/dev/null 2>&1; then
-  podman-compose -f compose.yaml down
+  podman-compose -p ppwl-dev -f compose.yaml down
 elif command -v podman >/dev/null 2>&1; then
   podman compose down
 else

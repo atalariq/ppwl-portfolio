@@ -1,3 +1,4 @@
+name: ppwl-prod
 services:
   app:
     build: .

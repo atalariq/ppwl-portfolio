@@ -1,3 +1,4 @@
+name: ppwl-dev
 services:
   db:
     image: docker.io/library/mariadb:11
