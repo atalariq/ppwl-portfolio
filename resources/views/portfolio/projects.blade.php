@@ -6,7 +6,9 @@
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">Projects</h1>
         @auth
-            <a href="{{ route('projects.create') }}" class="text-sm font-medium text-blue-600">Add Project</a>
+            @if (auth()->user()->isAdmin())
+                <a href="{{ route('post.projects.index') }}" class="text-sm font-medium text-blue-600">Kelola project</a>
+            @endif
         @endauth
     </div>
 

@@ -10,68 +10,74 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_can_view_login_and_register_pages(): void
+    private function admin(): User
     {
-        $this->get(route('login'))->assertOk()->assertSee('Masuk');
-        $this->get(route('register'))->assertOk()->assertSee('Buat akun');
+        return User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'role' => 'admin',
+        ]);
     }
 
-    public function test_register_creates_user_and_logs_in(): void
+    private function regularUser(): User
     {
-        $response = $this->post(route('store'), [
-            'name' => 'Atalariq',
-            'email' => 'atalariq@example.com',
-            'password' => 'rahasia123',
-            'password_confirmation' => 'rahasia123',
+        return User::factory()->create([
+            'name' => 'Regular User',
+            'email' => 'user@example.com',
+            'role' => 'user',
         ]);
-
-        $response->assertRedirect(route('dashboard'));
-        $this->assertAuthenticated();
-        $this->assertDatabaseHas('users', ['email' => 'atalariq@example.com']);
     }
 
-    public function test_register_rejects_mismatched_password(): void
+    public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->from(route('register'))->post(route('store'), [
-            'name' => 'Atalariq',
-            'email' => 'atalariq@example.com',
-            'password' => 'rahasia123',
-            'password_confirmation' => 'beda123456',
-        ]);
-
-        $response->assertSessionHasErrors('password');
-        $this->assertGuest();
-        $this->assertDatabaseMissing('users', ['email' => 'atalariq@example.com']);
+        $this->get(route('login'))->assertOk()->assertSee('Log in');
     }
 
-    public function test_login_with_valid_credentials_redirects_to_dashboard(): void
+    public function test_registration_is_disabled(): void
     {
-        $user = User::create([
-            'name' => 'Atalariq',
-            'email' => 'atalariq@example.com',
-            'password' => 'rahasia123',
+        $this->get('/register')->assertNotFound();
+        $this->post('/register', [
+            'name' => 'New User',
+            'email' => 'new@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertNotFound();
+    }
+
+    public function test_admin_is_redirected_to_the_management_area_after_login(): void
+    {
+        $admin = $this->admin();
+
+        $response = $this->post(route('login'), [
+            'email' => $admin->email,
+            'password' => 'password',
         ]);
 
-        $response = $this->post(route('authenticate'), [
+        $response->assertRedirect(route('post.projects.index', absolute: false));
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_non_admin_is_redirected_home_with_a_status_message(): void
+    {
+        $user = $this->regularUser();
+
+        $response = $this->post(route('login'), [
             'email' => $user->email,
-            'password' => 'rahasia123',
+            'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('status');
         $this->assertAuthenticatedAs($user);
     }
 
     public function test_login_with_invalid_credentials_shows_an_error(): void
     {
-        User::create([
-            'name' => 'Atalariq',
-            'email' => 'atalariq@example.com',
-            'password' => 'rahasia123',
-        ]);
+        $user = $this->admin();
 
-        $response = $this->from(route('login'))->post(route('authenticate'), [
-            'email' => 'atalariq@example.com',
-            'password' => 'salah-total',
+        $response = $this->from(route('login'))->post(route('login'), [
+            'email' => $user->email,
+            'password' => 'wrong-password',
         ]);
 
         $response->assertRedirect(route('login'));
@@ -79,46 +85,69 @@ class AuthTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_logout_invalidates_session(): void
+    public function test_login_is_rate_limited_after_five_failed_attempts(): void
     {
-        $user = User::create([
-            'name' => 'Atalariq',
-            'email' => 'atalariq@example.com',
-            'password' => 'rahasia123',
+        $user = $this->admin();
+
+        foreach (range(1, 5) as $attempt) {
+            $this->post(route('login'), [
+                'email' => $user->email,
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        $response = $this->post(route('login'), [
+            'email' => $user->email,
+            'password' => 'password',
         ]);
 
-        $response = $this->actingAs($user)->post(route('logout'));
-
-        $response->assertRedirect(route('home'));
+        $response->assertSessionHasErrors('email');
         $this->assertGuest();
     }
 
-    public function test_guest_is_redirected_from_dashboard_to_login(): void
+    public function test_users_can_logout(): void
     {
-        $this->get(route('dashboard'))->assertRedirect(route('login'));
+        $user = $this->admin();
+
+        $response = $this->actingAs($user)->post(route('logout'));
+
+        $response->assertRedirect('/');
+        $this->assertGuest();
+    }
+
+    public function test_guest_is_redirected_from_the_management_area_to_login(): void
+    {
+        $this->get(route('post.projects.index'))->assertRedirect(route('login'));
+    }
+
+    public function test_non_admin_gets_forbidden_from_the_management_area(): void
+    {
+        $this->actingAs($this->regularUser())
+            ->get(route('post.projects.index'))
+            ->assertForbidden();
+    }
+
+    public function test_admin_can_open_the_management_area(): void
+    {
+        $this->actingAs($this->admin())
+            ->get(route('post.projects.index'))
+            ->assertOk();
     }
 
     public function test_authenticated_user_is_redirected_away_from_login(): void
     {
-        $user = User::create([
-            'name' => 'Atalariq',
-            'email' => 'atalariq@example.com',
-            'password' => 'rahasia123',
-        ]);
-
-        $this->actingAs($user)->get(route('login'))->assertRedirect(route('dashboard'));
+        $this->actingAs($this->admin())
+            ->get(route('login'))
+            ->assertRedirect('/');
     }
 
-    public function test_guest_cannot_mutate_projects_but_can_read_them(): void
+    public function test_profile_page_requires_login_and_is_available_to_non_admin(): void
     {
-        $this->get(route('projects.index'))->assertOk();
-        $this->get(route('projects.create'))->assertRedirect(route('login'));
-        $this->post(route('projects.store'), [
-            'title' => 'Blocked Project',
-            'repo' => 'atalariq/blocked',
-            'description' => 'Should never be stored by a guest.',
-        ])->assertRedirect(route('login'));
+        $this->get(route('post.profile.edit'))->assertRedirect(route('login'));
 
-        $this->assertDatabaseMissing('projects', ['title' => 'Blocked Project']);
+        $this->actingAs($this->regularUser())
+            ->get(route('post.profile.edit'))
+            ->assertOk()
+            ->assertSee('Regular User');
     }
 }

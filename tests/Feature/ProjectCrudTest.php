@@ -15,29 +15,29 @@ class ProjectCrudTest extends TestCase
     {
         parent::setUp();
 
-        $this->actingAs(User::create([
-            'name' => 'Test User',
+        $this->actingAs(User::factory()->create([
+            'name' => 'Admin',
             'email' => 'crud-test@example.com',
-            'password' => 'rahasia123',
+            'role' => 'admin',
         ]));
     }
 
     public function test_store_creates_project_and_flashes_message(): void
     {
-        $response = $this->post(route('projects.store'), [
+        $response = $this->post(route('post.projects.store'), [
             'title' => 'My Project',
             'repo' => 'atalariq/my-project',
             'description' => 'A sufficiently long description.',
         ]);
 
-        $response->assertRedirect(route('projects.index'));
+        $response->assertRedirect(route('post.projects.index'));
         $response->assertSessionHas('success', 'Project created successfully.');
         $this->assertDatabaseHas('projects', ['title' => 'My Project']);
     }
 
     public function test_store_fails_validation_for_short_title(): void
     {
-        $response = $this->post(route('projects.store'), [
+        $response = $this->post(route('post.projects.store'), [
             'title' => 'Abcd',
             'repo' => 'atalariq/my-project',
             'description' => 'A sufficiently long description.',
@@ -49,7 +49,7 @@ class ProjectCrudTest extends TestCase
 
     public function test_store_fails_validation_for_short_description(): void
     {
-        $response = $this->post(route('projects.store'), [
+        $response = $this->post(route('post.projects.store'), [
             'title' => 'My Project',
             'repo' => 'atalariq/my-project',
             'description' => 'Too short',
@@ -67,7 +67,7 @@ class ProjectCrudTest extends TestCase
             'description' => 'An existing project description.',
         ]);
 
-        $response = $this->get(route('projects.edit', $project));
+        $response = $this->get(route('post.projects.edit', $project));
 
         $response->assertStatus(200);
     }
@@ -80,13 +80,13 @@ class ProjectCrudTest extends TestCase
             'description' => 'An existing project description.',
         ]);
 
-        $response = $this->put(route('projects.update', $project), [
+        $response = $this->put(route('post.projects.update', $project), [
             'title' => 'Updated Project',
             'repo' => 'atalariq/existing',
             'description' => 'An updated project description.',
         ]);
 
-        $response->assertRedirect(route('projects.show', $project));
+        $response->assertRedirect(route('post.projects.index'));
         $response->assertSessionHas('success', 'Project updated successfully.');
         $this->assertDatabaseHas('projects', ['id' => $project->id, 'title' => 'Updated Project']);
     }
@@ -99,17 +99,30 @@ class ProjectCrudTest extends TestCase
             'description' => 'A project that will be deleted.',
         ]);
 
-        $response = $this->delete(route('projects.destroy', $project));
+        $response = $this->delete(route('post.projects.destroy', $project));
 
-        $response->assertRedirect(route('projects.index'));
+        $response->assertRedirect(route('post.projects.index'));
         $response->assertSessionHas('success', 'Project deleted successfully.');
         $this->assertDatabaseMissing('projects', ['id' => $project->id]);
     }
 
     public function test_show_returns_404_for_missing_project(): void
     {
-        $response = $this->get('/projects/999');
+        $this->get('/projects/999')->assertNotFound();
+    }
 
-        $response->assertStatus(404);
+    public function test_non_admin_cannot_mutate_projects(): void
+    {
+        $project = Project::create([
+            'title' => 'Protected Project',
+            'repo' => 'atalariq/protected',
+            'description' => 'A protected project description.',
+        ]);
+
+        $this->actingAs(User::factory()->create(['role' => 'user']))
+            ->delete(route('post.projects.destroy', $project))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('projects', ['id' => $project->id]);
     }
 }

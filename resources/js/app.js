@@ -1,1 +1,7 @@
-console.log('portfolio loaded');
+
+
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+
+Alpine.start();

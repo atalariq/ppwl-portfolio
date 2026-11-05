@@ -9,9 +9,13 @@
 <body class="flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased">
     @include('partials.navbar')
 
-    <main class="mx-auto max-w-4xl px-4 py-8 grow">
+    <main class="mx-auto w-full max-w-4xl px-4 py-8 grow">
         @if (session('success'))
             <div class="mb-4 rounded border border-green-300 bg-green-50 px-4 py-2 text-sm text-green-800">{{ session('success') }}</div>
+        @endif
+
+        @if (session('status'))
+            <div class="mb-4 rounded border border-blue-300 bg-blue-50 px-4 py-2 text-sm text-blue-800">{{ session('status') }}</div>
         @endif
 
         @yield('content')

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
+    public function publicIndex(Request $request)
     {
         $perPage = (int) $request->integer('per_page', 10);
         $perPage = in_array($perPage, [5, 10, 25], true) ? $perPage : 10;
@@ -20,12 +20,19 @@ class ProjectController extends Controller
 
         $projects = $query->latest()->paginate($perPage)->withQueryString();
 
-        return view('projects.index', ['projects' => $projects]);
+        return view('portfolio.projects', ['projects' => $projects]);
+    }
+
+    public function index()
+    {
+        $projects = Project::latest()->paginate(10);
+
+        return view('post.projects.index', ['projects' => $projects]);
     }
 
     public function create()
     {
-        return view('projects.create');
+        return view('post.projects.create');
     }
 
     public function store(Request $request)
@@ -38,17 +45,17 @@ class ProjectController extends Controller
 
         Project::create($request->only(['title', 'repo', 'description']));
 
-        return redirect()->route('projects.index')->with('success', 'Project created successfully.');
+        return redirect()->route('post.projects.index')->with('success', 'Project created successfully.');
     }
 
     public function show(Project $project)
     {
-        return view('projects.show', ['project' => $project]);
+        return view('portfolio.project', ['project' => $project]);
     }
 
     public function edit(Project $project)
     {
-        return view('projects.edit', ['project' => $project]);
+        return view('post.projects.edit', ['project' => $project]);
     }
 
     public function update(Request $request, Project $project)
@@ -61,13 +68,13 @@ class ProjectController extends Controller
 
         $project->update($request->only(['title', 'repo', 'description']));
 
-        return redirect()->route('projects.show', $project)->with('success', 'Project updated successfully.');
+        return redirect()->route('post.projects.index')->with('success', 'Project updated successfully.');
     }
 
     public function destroy(Project $project)
     {
         $project->delete();
 
-        return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
+        return redirect()->route('post.projects.index')->with('success', 'Project deleted successfully.');
     }
 }

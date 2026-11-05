@@ -10,12 +10,14 @@
     <div class="mt-6 flex items-center gap-4">
         <a href="{{ route('projects.index') }}" class="text-sm font-medium text-blue-600">Back to Projects</a>
         @auth
-            <a href="{{ route('projects.edit', $project) }}" class="text-sm font-medium text-blue-600">Edit</a>
-            <form action="{{ route('projects.destroy', $project) }}" method="POST" data-confirm="Delete this project?">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="text-sm font-medium text-red-600">Delete</button>
-            </form>
+            @if (auth()->user()->isAdmin())
+                <a href="{{ route('post.projects.edit', $project) }}" class="text-sm font-medium text-blue-600">Edit</a>
+                <form action="{{ route('post.projects.destroy', $project) }}" method="POST" data-confirm="Delete this project?">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-sm font-medium text-red-600">Delete</button>
+                </form>
+            @endif
         @endauth
     </div>
 
