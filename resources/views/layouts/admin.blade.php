@@ -81,9 +81,13 @@
                         <p class="text-sm font-medium">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-gray-500">{{ ucfirst(auth()->user()->role) }}</p>
                     </div>
-                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-sm font-semibold text-white">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
+                    @if (auth()->user()->avatar)
+                        <img src="{{ auth()->user()->avatarUrl() }}" alt="{{ auth()->user()->name }}" class="h-9 w-9 rounded-full object-cover">
+                    @else
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-sm font-semibold text-white">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                    @endif
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-sm text-red-600 hover:underline">Logout</button>
