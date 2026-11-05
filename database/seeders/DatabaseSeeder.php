@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Faker\Factory;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -40,7 +41,7 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
         ]);
 
-        if (class_exists(\Faker\Factory::class)) {
+        if (class_exists(Factory::class)) {
             $this->call(ProjectTableSeeder::class);
         }
     }
