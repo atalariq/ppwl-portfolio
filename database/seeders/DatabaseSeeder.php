@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,9 +39,5 @@ class DatabaseSeeder extends Seeder
             EducationSeeder::class,
             ProjectSeeder::class,
         ]);
-
-        if (class_exists(Factory::class)) {
-            $this->call(ProjectTableSeeder::class);
-        }
     }
 }
