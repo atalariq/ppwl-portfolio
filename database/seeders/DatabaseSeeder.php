@@ -38,7 +38,10 @@ class DatabaseSeeder extends Seeder
             ExperienceSeeder::class,
             EducationSeeder::class,
             ProjectSeeder::class,
-            ProjectTableSeeder::class,
         ]);
+
+        if (class_exists(\Faker\Factory::class)) {
+            $this->call(ProjectTableSeeder::class);
+        }
     }
 }
