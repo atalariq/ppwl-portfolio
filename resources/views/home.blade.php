@@ -3,21 +3,30 @@
 @section('title', 'Home — Portfolio')
 
 @section('content')
-    <h1 class="text-3xl font-bold">{{ $name }}</h1>
-    <p class="mt-2 text-lg text-gray-600">{{ $role }}</p>
-    <p class="mt-4">{{ $summary }}</p>
+    <section class="py-8 sm:py-12">
+        <p class="text-sm font-medium uppercase tracking-wider text-brand-600">Portfolio</p>
+        <h1 class="mt-3 text-4xl font-semibold tracking-tight">{{ $name }}</h1>
+        <p class="mt-2 text-lg text-muted">{{ $role }}</p>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed">{{ $summary }}</p>
 
-    <div class="mt-6 flex gap-3">
-        <a href="{{ route('about') }}" class="rounded bg-gray-900 px-4 py-2 text-sm text-white">About Me</a>
-        <a href="{{ route('projects.index') }}" class="rounded border px-4 py-2 text-sm">View Projects</a>
-    </div>
+        <div class="mt-8 flex flex-wrap gap-3">
+            <x-ui.button :href="route('about')">About me</x-ui.button>
+            <x-ui.button :href="route('projects.index')" variant="secondary">View projects</x-ui.button>
+        </div>
 
-    <ul class="mt-6 space-y-1 text-sm text-gray-600">
-        <li>Sleman, Yogyakarta</li>
-        <li><a href="https://atalariq.github.io">atalariq.dev</a> · <a href="https://github.com/atalariq">github.com/atalariq</a> · <a href="https://linkedin.com/in/atalariq">linkedin.com/in/atalariq</a></li>
-    </ul>
+        <dl class="mt-12 grid gap-4 text-sm sm:grid-cols-3">
+            <div class="card card-body">
+                <dt class="text-muted">Location</dt>
+                <dd class="mt-1 font-medium">Sleman, Yogyakarta</dd>
+            </div>
+            <div class="card card-body">
+                <dt class="text-muted">Website</dt>
+                <dd class="mt-1 font-medium"><a href="https://atalariq.github.io">atalariq.dev</a></dd>
+            </div>
+            <div class="card card-body">
+                <dt class="text-muted">GitHub</dt>
+                <dd class="mt-1 font-medium"><a href="https://github.com/atalariq">github.com/atalariq</a></dd>
+            </div>
+        </dl>
+    </section>
 @endsection
-
-@push('scripts')
-    <script>console.log('home loaded');</script>
-@endpush

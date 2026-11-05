@@ -3,17 +3,45 @@
 @section('title', 'About — Portfolio')
 
 @section('content')
-    <h1 class="text-2xl font-bold">About</h1>
-    <p class="mt-4">I am Atalariq Barra, Software Engineering student at UGM. My technical journey started when I tried installing Linux, accidentally wiped Windows, and had to learn the command line to fix my machine.</p>
-    <p class="mt-2">I apply that background to managing WordPress and CMS platforms, focusing on site reliability, speed optimization, and clean publishing workflows.</p>
+    <x-ui.page-header title="About" description="Software engineering student at UGM, focused on reliable web systems and clean publishing workflows." />
 
-    <p class="text-sm text-gray-600">Email: {{ $email }}</p>
-    <p class="text-sm text-gray-600">Contact: {{ $contact }}</p>
+    <div class="mt-8 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+        <div class="space-y-4 text-base leading-relaxed">
+            <p>
+                I am Atalariq Barra, a Software Engineering student at Universitas Gadjah Mada. My technical
+                journey started when I tried installing Linux, accidentally wiped Windows, and had to learn
+                the command line to fix my machine.
+            </p>
+            <p>
+                I apply that background to managing WordPress and CMS platforms, focusing on site reliability,
+                speed optimization, and clean publishing workflows.
+            </p>
+        </div>
 
-    <h2 class="mt-6 text-xl font-semibold">Skills</h2>
-    <ul class="mt-2 space-y-2">
-        @foreach($skills as $category => $value)
-            <li><span class="font-medium">{{ $category }}:</span> {{ $value }}</li>
-        @endforeach
-    </ul>
+        <aside class="card card-body">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-muted">Contact</h2>
+            <dl class="mt-4 space-y-3 text-sm">
+                <div>
+                    <dt class="text-muted">Email</dt>
+                    <dd class="font-medium">{{ $email }}</dd>
+                </div>
+                <div>
+                    <dt class="text-muted">Contact</dt>
+                    <dd class="font-medium">{{ $contact }}</dd>
+                </div>
+            </dl>
+        </aside>
+    </div>
+
+    <section class="mt-12">
+        <h2 class="text-xl font-semibold">Skills</h2>
+        <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+            @foreach ($skills as $category => $value)
+                <div class="card card-body">
+                    <dt class="text-sm font-medium text-muted">{{ $category }}</dt>
+                    <dd class="mt-1">{{ $value }}</dd>
+                </div>
+            @endforeach
+        </dl>
+    </section>
 @endsection

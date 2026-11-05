@@ -3,54 +3,35 @@
 @section('title', 'Skills')
 
 @section('content')
-    <div class="mb-4 flex items-center justify-between">
-        <p class="text-sm text-gray-600">Daftar skill yang dipakai pada dashboard dan halaman portofolio.</p>
-        <a href="{{ route('post.skills.create') }}" class="rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white">Tambah Skill</a>
-    </div>
+    <x-ui.page-header title="Skills" description="Skill dipakai pada card Skill Teratas di dashboard.">
+        <x-slot:actions>
+            <x-ui.button :href="route('post.skills.create')">Tambah skill</x-ui.button>
+        </x-slot:actions>
+    </x-ui.page-header>
 
-    <div class="overflow-hidden rounded-lg bg-white shadow-sm">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
-                <tr>
-                    <th class="px-4 py-3">Nama</th>
-                    <th class="px-4 py-3">Level</th>
-                    <th class="px-4 py-3 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse ($skills as $skill)
-                    <tr>
-                        <td class="px-4 py-3 font-medium">{{ $skill->name }}</td>
-                        <td class="px-4 py-3">{{ $skill->level }}</td>
-                        <td class="px-4 py-3 text-right">
-                            <a href="{{ route('post.skills.edit', $skill) }}" class="text-blue-600 hover:underline">Edit</a>
-                            <form action="{{ route('post.skills.destroy', $skill) }}" method="POST" class="inline" data-confirm="Hapus skill ini?">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="ml-3 text-red-600 hover:underline">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="3" class="px-4 py-6 text-center text-gray-500">Belum ada skill.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="mt-6 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="table">
+                <thead><tr><th>Nama</th><th>Level</th><th class="text-right">Aksi</th></tr></thead>
+                <tbody>
+                    @forelse ($skills as $skill)
+                        <tr>
+                            <td class="font-medium">{{ $skill->name }}</td>
+                            <td>{{ $skill->level }}</td>
+                            <td class="text-right">
+                                <a href="{{ route('post.skills.edit', $skill) }}" class="text-sm">Edit</a>
+                                <form action="{{ route('post.skills.destroy', $skill) }}" method="POST" class="inline" onsubmit="return confirm('Hapus skill ini?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="ml-3 text-sm text-danger hover:underline">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="3" class="text-center text-muted">Belum ada skill.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-
     <div class="mt-4">{{ $skills->links() }}</div>
-
-    @push('scripts')
-        <script>
-            document.querySelectorAll('form[data-confirm]').forEach((form) => {
-                form.addEventListener('submit', (event) => {
-                    if (!confirm(form.dataset.confirm)) {
-                        event.preventDefault();
-                    }
-                });
-            });
-        </script>
-    @endpush
 @endsection

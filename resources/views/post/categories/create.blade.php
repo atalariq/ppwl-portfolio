@@ -3,20 +3,18 @@
 @section('title', 'Tambah Kategori')
 
 @section('content')
-    <form action="{{ route('post.categories.store') }}" method="POST" class="max-w-xl space-y-4 rounded-lg bg-white p-6 shadow-sm">
+    <x-ui.page-header title="Tambah kategori" description="Slug dibuat otomatis dari nama." />
+
+    <form action="{{ route('post.categories.store') }}" method="POST" class="mt-6 max-w-xl space-y-5">
         @csrf
-
-        <div>
-            <label for="name" class="block text-sm font-medium">Nama kategori</label>
-            <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 w-full rounded border px-3 py-2">
-            @error('name')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+        <div class="card card-body">
+            <x-ui.field label="Nama kategori" name="name" :error="$errors->first('name')">
+                <input id="name" class="input" type="text" name="name" value="{{ old('name') }}">
+            </x-ui.field>
         </div>
-
-        <div class="flex items-center gap-3">
-            <button type="submit" class="rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white">Simpan</button>
-            <a href="{{ route('post.categories.index') }}" class="text-sm text-gray-600 underline">Batal</a>
+        <div class="flex gap-3">
+            <x-ui.button type="submit">Simpan</x-ui.button>
+            <x-ui.button :href="route('post.categories.index')" variant="ghost">Batal</x-ui.button>
         </div>
     </form>
 @endsection

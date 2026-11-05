@@ -20,6 +20,7 @@ Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('pro
 
 Route::prefix('post')->name('post.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::view('styleguide', 'post.styleguide')->name('styleguide');
 
     Route::resource('projects', ProjectController::class);
     Route::post('projects/{project}/images', [ProjectGalleryController::class, 'store'])->name('projects.images.store');

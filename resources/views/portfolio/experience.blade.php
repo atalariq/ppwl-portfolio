@@ -3,21 +3,22 @@
 @section('title', 'Experience — Portfolio')
 
 @section('content')
-    <h1 class="text-2xl font-bold">Experience</h1>
-    <p class="mt-2 text-sm text-gray-600">Pengalaman organisasi dan kontribusi teknis yang relevan.</p>
+    <x-ui.page-header title="Experience" description="Organizational experience and technical contributions." />
 
-    @forelse ($experiences as $experience)
-        <article class="mt-4 rounded border bg-white p-4">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="font-semibold">{{ $experience->role }}</h2>
-                <span class="text-sm text-gray-500">{{ $experience->period }}</span>
-            </div>
-            <p class="text-sm text-gray-600">{{ $experience->organization }}</p>
-            @if ($experience->description)
-                <p class="mt-2 text-sm">{{ $experience->description }}</p>
-            @endif
-        </article>
-    @empty
-        <p class="mt-4 text-sm text-gray-500">Belum ada pengalaman yang ditambahkan.</p>
-    @endforelse
+    <div class="mt-8 space-y-4">
+        @forelse ($experiences as $experience)
+            <article class="card card-body">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-lg font-semibold">{{ $experience->role }}</h2>
+                    <span class="text-sm text-muted">{{ $experience->period }}</span>
+                </div>
+                <p class="mt-1 text-sm font-medium text-brand-700">{{ $experience->organization }}</p>
+                @if ($experience->description)
+                    <p class="mt-3 text-sm leading-relaxed">{{ $experience->description }}</p>
+                @endif
+            </article>
+        @empty
+            <x-ui.empty-state title="Belum ada pengalaman" description="Data pengalaman akan tampil setelah seeder dijalankan." />
+        @endforelse
+    </div>
 @endsection
