@@ -1,67 +1,125 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PPWL Portfolio Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Portfolio application for the Advanced Web Programming Practicum (PPWL). The
+application grows across meetings; source work for meeting `x` lives on branch
+`pertemuan<x>`.
 
-## Getting started
+## Stack
 
-Clone the repo, run the setup script for your OS, then start the app. [SETUP.md](SETUP.md) has the full instructions, including Windows/Herd and macOS/lerd notes.
+- PHP 8.5 + Laravel 13
+- Node.js 24 + Vite + Tailwind CSS 4
+- MariaDB 11 (Podman/Docker) for local development
+- `mise` for tool versions and repeatable tasks
+
+## Quick start (WSL2, Linux, macOS)
+
+Prerequisites: `mise`, Podman (or Docker), and the PHP build dependencies listed
+below. On Windows, run these commands inside WSL2.
 
 ```sh
-composer run setup   # or: bash setup.sh / .\setup.ps1
-php artisan serve
+git clone https://github.com/atalariq/ppwl-portfolio.git
+cd ppwl-portfolio
+mise install
+mise run setup
+mise run dev
 ```
 
-## About Laravel
+Open <http://127.0.0.1:8000>. Use the seeded admin account:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- `admin@example.com` / `password123` (admin)
+- `test@example.com` / `password` (non-admin, for 403 checks)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Always use `127.0.0.1`, not `localhost`, so cookies, assets, and redirects stay on
+one host.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tasks
 
-## Learning Laravel
+| Command | Purpose |
+|---|---|
+| `mise run setup` | Create `.env`, generate key, start DB, install dependencies, migrate, seed, link storage, build assets |
+| `mise run dev` | Start DB, Laravel on `127.0.0.1:8000`, and Vite |
+| `mise run test` | Run PHPUnit |
+| `mise run build` | Build production assets |
+| `mise run fresh` | Recreate the local database and seed demo data |
+| `mise run check` | Pint, tests, and asset build |
+| `mise run db:up` / `db:down` | Start or stop MariaDB |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The database runs in Podman/Docker on `127.0.0.1:3306`. The credentials live in
+`.env` and match `compose.yaml`.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Environment files
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- `.env.example` is the local template; copy it to `.env`.
+- `.env.prod.example` is the production template; copy it to `.env.prod` on the
+  server.
+- `.env` and `.env.prod` are never committed.
 
-## Agentic Development
+There is no `.env.local` cascade and no second database port. Local development
+uses `.env`; production uses `APP_ENV=prod` and `.env.prod`.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## PHP build dependencies
 
-```bash
-composer require laravel/boost --dev
+`mise` installs PHP from source through vfox-php. Install the build dependencies
+first.
 
-php artisan boost:install
+Ubuntu/WSL2:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y build-essential autoconf bison re2c pkg-config \
+  libxml2-dev libssl-dev libicu-dev libzip-dev libonig-dev \
+  libcurl4-openssl-dev libpng-dev libjpeg-dev libfreetype6-dev \
+  libwebp-dev libgmp-dev libsodium-dev libreadline-dev libbz2-dev
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+macOS:
 
-## Contributing
+```sh
+xcode-select --install
+brew install autoconf bison re2c pkg-config libxml2 openssl@3 icu4c \
+  zlib libzip oniguruma freetype jpeg libpng webp gmp libsodium readline bzip2
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The first `mise install` can take 5–15 minutes because PHP is compiled.
 
-## Code of Conduct
+## Full container (deploy or demo)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The full stack runs PHP-FPM + nginx + MariaDB in containers.
 
-## Security Vulnerabilities
+```sh
+cp .env.prod.example .env.prod
+# edit APP_KEY, APP_URL, DB credentials
+php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
+podman-compose -f compose.prod.yaml up -d --build
+podman-compose -f compose.prod.yaml run --rm app php artisan migrate --seed --force
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Open <http://127.0.0.1:8080>. Docker users can replace `podman-compose` with
+`docker compose`. The application image is defined in `Dockerfile` and also works
+with `podman build`.
 
-## License
+For a real deployment, set `APP_URL`, `APP_KEY`, database credentials, and
+`SESSION_SECURE_COOKIE=true` in `.env.prod`; do not commit it.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Tests and assets
+
+```sh
+mise run test
+mise run build
+```
+
+Tests use in-memory SQLite through `phpunit.xml`; local development uses MariaDB.
+
+## Application areas
+
+- Routes: `routes/web.php`, `routes/auth.php`
+- Controllers: `app/Http/Controllers/`
+- Models: `app/Models/`
+- Views: `resources/views/`
+- Design system: `resources/css/app.css`, `resources/views/components/ui/`, `DESIGN.md`
+- Migrations and seeders: `database/`
+- Container files: `Dockerfile`, `compose.yaml`, `compose.prod.yaml`, `docker/`
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). Every meeting adds one section.

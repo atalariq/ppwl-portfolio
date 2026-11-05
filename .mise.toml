@@ -1,0 +1,81 @@
+[tools]
+php = "8.5.12"
+node = "24"
+
+[tasks.setup]
+description = "Install dependencies, start the database, migrate, and build assets"
+run = """
+set -eu
+[ -f .env ] || cp .env.example .env
+if ! grep -q '^APP_KEY=base64:' .env; then
+  php artisan key:generate
+fi
+mise run db:up
+composer install --no-interaction --prefer-dist
+php artisan migrate --seed
+php artisan storage:link || true
+npm ci
+npm run build
+"""
+
+[tasks.dev]
+description = "Start MariaDB, Laravel on 127.0.0.1:8000, and Vite"
+run = """
+set -eu
+mise run db:up
+php artisan serve --host=127.0.0.1 --port=8000 --no-reload &
+SERVER_PID=$!
+trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT INT TERM
+npm run dev
+"""
+
+[tasks."db:up"]
+description = "Start MariaDB with Podman or Docker Compose"
+run = """
+set -eu
+if command -v podman-compose >/dev/null 2>&1; then
+  podman-compose -f compose.yaml up -d db
+elif command -v podman >/dev/null 2>&1; then
+  podman compose up -d db
+else
+  docker compose up -d db
+fi
+"""
+
+[tasks."db:down"]
+description = "Stop the local database container"
+run = """
+set -eu
+if command -v podman-compose >/dev/null 2>&1; then
+  podman-compose -f compose.yaml down
+elif command -v podman >/dev/null 2>&1; then
+  podman compose down
+else
+  docker compose down
+fi
+"""
+
+[tasks.test]
+description = "Run the PHP test suite"
+run = "composer test"
+
+[tasks.build]
+description = "Build production frontend assets"
+run = "npm run build"
+
+[tasks.fresh]
+description = "Recreate the local database and seed demo data"
+run = "php artisan migrate:fresh --seed"
+
+[tasks.lint]
+description = "Check code style"
+run = "vendor/bin/pint --test"
+
+[tasks.check]
+description = "Run style checks, tests, and asset build"
+run = """
+set -eu
+vendor/bin/pint --test
+composer test
+npm run build
+"""

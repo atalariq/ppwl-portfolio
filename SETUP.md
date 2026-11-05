@@ -1,132 +1,83 @@
 # Setup
 
-This is a Laravel portfolio site. These instructions get it running on Windows, macOS or Linux.
+The supported local flow is `mise` plus Podman/Docker. Herd, Lerd, and devenv are
+no longer used.
 
-## What you need
+## 1. Install system prerequisites
 
-- PHP 8.3 or newer
-- Composer
-- Node.js 20.19 or newer (24 is what the project targets)
-- MySQL or MariaDB only if you want to use them. The default SQLite needs no server.
+- `mise` (<https://mise.jdx.dev>)
+- Podman or Docker with Compose
+- PHP build dependencies (see the list in `README.md`)
 
-If anything is missing, [Herd](https://herd.laravel.com) on Windows and macOS bundles PHP, Composer and Node. [php.new](https://php.new) installs PHP and Composer on its own.
+Windows users should work inside WSL2. Native Windows without WSL2 is not a
+supported path for this repository.
 
-## Quick start
-
-```sh
-git clone <repo-url> ppwl-my-portfolio
-cd ppwl-my-portfolio
-```
-
-macOS or Linux:
+## 2. Bootstrap
 
 ```sh
-./setup.sh
+git clone https://github.com/atalariq/ppwl-portfolio.git
+cd ppwl-portfolio
+mise install
+mise run setup
 ```
 
-Windows PowerShell. Use the second line if Windows blocks the script:
+`mise run setup` is idempotent. It creates `.env` from `.env.example` when needed,
+generates `APP_KEY` only when missing, starts MariaDB, installs PHP/Node
+dependencies, runs migrations and seeders, links `public/storage`, and builds the
+frontend.
 
-```powershell
-.\setup.ps1
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
-```
-
-Windows without a terminal: double-click `setup.cmd`.
-
-The script checks your tools, installs dependencies, creates `.env`, generates the app key, sets up the database and builds the assets. It is safe to run twice.
-
-Then start the app:
+## 3. Run
 
 ```sh
-php artisan serve
+mise run dev
 ```
 
-Open <http://localhost:8000>.
+Open <http://127.0.0.1:8000>. Use the seeded admin account from `README.md`.
 
-While you edit CSS or JS, run this in a second terminal so the browser reloads on change:
+## 4. Stop
 
 ```sh
-npm run dev
+mise run db:down
 ```
 
-## Manual setup
-
-Run these yourself if you want to see each step, or if the script stops partway.
-
-1. `composer install`
-2. `cp .env.example .env` (Windows: `copy .env.example .env`)
-3. `php artisan key:generate`
-4. Create an empty file at `database/database.sqlite`. Skip this if you use MySQL.
-5. `php artisan migrate`
-6. `npm install`
-7. `npm run build`
-
-## Run it
-
-- `php artisan serve`, then open <http://localhost:8000>, or
-- In Herd, the project folder is already served at `ppwl-my-portfolio.test`. No `artisan serve` needed.
-
-Pages: `/` home, `/about`, `/education`, `/projects`.
-
-Tests: `composer test`.
-
-## Database
-
-The default is SQLite. Your data lives in `database/database.sqlite`. To start over, delete that file and run `php artisan migrate` again.
-
-To use MySQL instead, change these keys in `.env`:
-
-```
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ppwl_my_portfolio
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Create the database first, then run `php artisan migrate`. Herd's default MySQL credentials are user `root` with an empty password; create the database from the Herd database panel.
-
-If you copied a `.env` from a machine that runs lerd, then `DB_HOST`, `REDIS_HOST` and `MAIL_HOST` point at `lerd-*` container names. Those only resolve inside lerd. Set them to `127.0.0.1` or start over from `.env.example`.
-
-## Platform notes
-
-### Windows with Herd
-
-Herd serves any registered folder at `<folder>.test` over HTTPS. Add the project folder in Herd, pick PHP 8.3 or newer, then open <https://ppwl-my-portfolio.test>. Node ships with Herd. If `php` is not recognized in a plain terminal, use the terminal inside the Herd app.
-
-### macOS or Linux with lerd
-
-lerd reads `.lerd.yaml`, which asks for PHP 8.5, Node 24 and a MySQL service. Link the folder, wire the environment, then run the framework setup:
+## Production / demo container
 
 ```sh
-lerd link
-lerd env setup
-lerd framework setup
+cp .env.prod.example .env.prod
+# edit APP_KEY, APP_URL, DB credentials
+podman-compose -f compose.prod.yaml up -d --build
+podman-compose -f compose.prod.yaml run --rm app php artisan migrate --seed --force
 ```
 
-lerd writes a `.env` that points at `lerd-mysql` and friends. That file is gitignored, so nothing lerd-specific is committed.
-
-### Plain PHP
-
-`php artisan serve` is enough. Make sure the `pdo_sqlite` extension is enabled, which it is by default.
+Open <http://127.0.0.1:8080>. Replace `podman-compose` with `docker compose` if
+using Docker. The app runs PHP-FPM behind nginx; `Dockerfile` is Podman-compatible.
 
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
-| --- | --- | --- |
-| `No application encryption key has been specified` | `.env` missing or `APP_KEY` empty | `php artisan key:generate` |
-| `Database file at path [database/database.sqlite] does not exist` | The SQLite file was never created | Create an empty `database/database.sqlite`, then `php artisan migrate` |
-| `SQLSTATE[HY000] [2002]` or host `lerd-mysql` not found | `.env` points at hosts that do not exist on this machine | Set `DB_HOST=127.0.0.1` (and `REDIS_HOST`, `MAIL_HOST`), or copy `.env.example` to `.env` again |
-| PowerShell says `running scripts is disabled on this system` | Execution policy | `powershell -ExecutionPolicy Bypass -File .\setup.ps1` |
-| `Unable to locate file in Vite manifest` | Assets were not built | `npm run dev`, or `npm run build` |
-| `Failed to listen on 127.0.0.1:8000` | Port already in use | `php artisan serve --port=8001` |
-| `php: command not found` or `'php' is not recognized` | PHP is not on your PATH | Use the Herd terminal, or install PHP through php.new |
-| `npm install` complains about the Node version | Node is too old | Install Node 24 |
+|---|---|---|
+| `php: command not found` after `mise install` | PHP build failed | Install the build dependencies in `README.md`, then run `mise install` again |
+| Database connection refused | MariaDB container not ready | Run `mise run db:up`, wait for the health check, then `mise run setup` |
+| Port 3306 already in use | Another MySQL/MariaDB is running | Stop it, or change `DB_PORT` in `.env` and the compose port mapping together |
+| Login redirects back to `/login` | Browser opened a different host or stale cookie | Use `http://127.0.0.1:8000` consistently; clear cookies for the site |
+| Images return 404 | `public/storage` missing | `php artisan storage:link` (run by `mise run setup`) |
+| Vite manifest missing | Assets not built | `mise run build` or run `mise run dev` |
+| CSS changes trigger full reload | Vite HMR reconnecting | Ensure Vite uses `127.0.0.1:5173` and the browser uses `127.0.0.1:8000` |
+| `APP_KEY` missing | `.env` incomplete | `php artisan key:generate` |
+| Permission denied on storage | Container/host UID mismatch | Fix ownership of `storage/` and `bootstrap/cache/` |
 
-## Where to edit content
+## Manual commands
 
-- Routes: `routes/web.php`
-- Views: `resources/views/`
-- Styles: `resources/css/app.css`
-- JavaScript: `resources/js/app.js`
+If you prefer not to use the task runner:
+
+```sh
+cp .env.example .env
+php artisan key:generate
+podman-compose -f compose.yaml up -d db
+composer install
+php artisan migrate --seed
+php artisan storage:link
+npm ci
+npm run build
+php artisan serve --host=127.0.0.1 --port=8000 --no-reload
+```
