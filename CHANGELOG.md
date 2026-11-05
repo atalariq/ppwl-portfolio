@@ -27,6 +27,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Login loop caused by inconsistent hosts and `.env.local`/`APP_ENV` layering.
 - Flash messages now survive redirects consistently.
 
+Commits: `622e2a9`, `464caef`, `ebab9b0`, `271ee04`, `7c97cdc`, `0deccd2`.
+
 ## [Pertemuan 10] - 2026-11-05
 
 Dashboard, file upload, and gallery.
