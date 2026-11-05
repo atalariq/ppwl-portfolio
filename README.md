@@ -90,11 +90,11 @@ The full stack runs PHP-FPM + nginx + MariaDB in containers.
 cp .env.prod.example .env.prod
 # edit APP_KEY, APP_URL, DB credentials
 php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
-podman compose -f compose.prod.yaml up -d --build
-podman compose -f compose.prod.yaml run --rm app php artisan migrate --seed --force
+podman-compose -f compose.prod.yaml up -d --build
+podman-compose -f compose.prod.yaml run --rm app php artisan migrate --seed --force
 ```
 
-Open <http://127.0.0.1:8080>. Docker users can replace `podman compose` with
+Open <http://127.0.0.1:8080>. Docker users can replace `podman-compose` with
 `docker compose`. The application image is defined in `Dockerfile` and also works
 with `podman build`.
 

@@ -45,11 +45,11 @@ mise run db:down
 ```sh
 cp .env.prod.example .env.prod
 # edit APP_KEY, APP_URL, DB credentials
-podman compose -f compose.prod.yaml up -d --build
-podman compose -f compose.prod.yaml run --rm app php artisan migrate --seed --force
+podman-compose -f compose.prod.yaml up -d --build
+podman-compose -f compose.prod.yaml run --rm app php artisan migrate --seed --force
 ```
 
-Open <http://127.0.0.1:8080>. Replace `podman compose` with `docker compose` if
+Open <http://127.0.0.1:8080>. Replace `podman-compose` with `docker compose` if
 using Docker. The app runs PHP-FPM behind nginx; `Dockerfile` is Podman-compatible.
 
 ## Troubleshooting
@@ -73,7 +73,7 @@ If you prefer not to use the task runner:
 ```sh
 cp .env.example .env
 php artisan key:generate
-podman compose up -d db
+podman-compose -f compose.yaml up -d db
 composer install
 php artisan migrate --seed
 php artisan storage:link
