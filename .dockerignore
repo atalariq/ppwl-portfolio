@@ -14,5 +14,6 @@ public/storage
 storage/app/public
 storage/framework
 storage/logs
+bootstrap/cache/*.php
 tests
 *.log

@@ -1,4 +1,4 @@
-FROM composer:2 AS vendor
+FROM docker.io/library/composer:2 AS vendor
 
 WORKDIR /app
 COPY composer.json composer.lock ./
@@ -6,7 +6,7 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 COPY . .
 RUN composer dump-autoload --optimize --no-scripts
 
-FROM node:24-alpine AS assets
+FROM docker.io/library/node:24-alpine AS assets
 
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -16,7 +16,7 @@ COPY public ./public
 COPY vite.config.js ./
 RUN npm run build
 
-FROM php:8.5-fpm-alpine AS runtime
+FROM docker.io/library/php:8.5-fpm-alpine AS runtime
 
 RUN apk add --no-cache \
         nginx \
@@ -27,8 +27,11 @@ RUN apk add --no-cache \
         libjpeg-turbo-dev \
         freetype-dev \
         oniguruma-dev \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install intl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd zip intl opcache
+    && docker-php-ext-install gd
 
 WORKDIR /var/www/html
 
@@ -40,6 +43,7 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint
 
 RUN chmod +x /usr/local/bin/entrypoint \
     && mkdir -p storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && rm -f bootstrap/cache/*.php \
     && chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
