@@ -1,6 +1,7 @@
 *.log
 .DS_Store
 .env
+.env.prod
 .env.backup
 .env.local
 .env.*.local
@@ -27,4 +28,4 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-.devenv/
+.mise/
