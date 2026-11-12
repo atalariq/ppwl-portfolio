@@ -38,14 +38,14 @@ class PublicPageTest extends TestCase
     {
         Project::create([
             'title' => 'Published Project',
-            'repo' => 'atalariq/published',
+            'repository_url' => 'https://github.com/atalariq/published',
             'description' => 'A published project description.',
             'status' => 'published',
         ]);
 
         Project::create([
             'title' => 'Draft Project',
-            'repo' => 'atalariq/draft',
+            'repository_url' => 'https://github.com/atalariq/draft',
             'description' => 'A draft project description.',
             'status' => 'draft',
         ]);
@@ -61,21 +61,29 @@ class PublicPageTest extends TestCase
     {
         $project = Project::create([
             'title' => 'Published Detail',
-            'repo' => 'atalariq/published-detail',
+            'repository_url' => 'https://github.com/atalariq/published-detail',
+            'short_description' => 'A short published description.',
             'description' => 'A published project description.',
             'status' => 'published',
+            'project_url' => 'https://example.com/demo',
+            'project_date' => '2026-01-15',
         ]);
 
         $this->get(route('projects.show', $project))
             ->assertOk()
-            ->assertSee('Published Detail');
+            ->assertSee('Published Detail')
+            ->assertSee('A short published description.')
+            ->assertSee('https://github.com/atalariq/published-detail', false)
+            ->assertSee('https://example.com/demo', false)
+            ->assertSee('January 2026')
+            ->assertSee('<meta name="description" content="A short published description.">', false);
     }
 
     public function test_draft_project_detail_is_hidden_from_guests_but_visible_to_admin(): void
     {
         $project = Project::create([
             'title' => 'Draft Detail',
-            'repo' => 'atalariq/draft-detail',
+            'repository_url' => 'https://github.com/atalariq/draft-detail',
             'description' => 'A draft project description.',
             'status' => 'draft',
         ]);

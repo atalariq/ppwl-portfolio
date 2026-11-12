@@ -22,32 +22,31 @@ class TaxonomyCrudTest extends TestCase
 
     public function test_skill_can_be_created_updated_and_deleted(): void
     {
-        $this->post(route('post.skills.store'), [
+        $this->post(route('admin.skills.store'), [
             'name' => 'Laravel',
-            'level' => 90,
-        ])->assertRedirect(route('post.skills.index'));
+            'category' => 'Frameworks',
+        ])->assertRedirect(route('admin.skills.index'));
 
         $skill = Skill::where('name', 'Laravel')->firstOrFail();
 
-        $this->put(route('post.skills.update', $skill), [
+        $this->put(route('admin.skills.update', $skill), [
             'name' => 'Laravel Framework',
-            'level' => 95,
-        ])->assertRedirect(route('post.skills.index'));
+            'category' => 'Frameworks',
+        ])->assertRedirect(route('admin.skills.index'));
 
-        $this->assertDatabaseHas('skills', ['id' => $skill->id, 'name' => 'Laravel Framework', 'level' => 95]);
+        $this->assertDatabaseHas('skills', ['id' => $skill->id, 'name' => 'Laravel Framework', 'category' => 'Frameworks']);
 
-        $this->delete(route('post.skills.destroy', $skill))
-            ->assertRedirect(route('post.skills.index'));
+        $this->delete(route('admin.skills.destroy', $skill))
+            ->assertRedirect(route('admin.skills.index'));
 
         $this->assertDatabaseMissing('skills', ['id' => $skill->id]);
     }
 
-    public function test_skill_level_must_be_between_one_and_one_hundred(): void
+    public function test_skill_category_is_required(): void
     {
-        $this->post(route('post.skills.store'), [
+        $this->post(route('admin.skills.store'), [
             'name' => 'Invalid Skill',
-            'level' => 101,
-        ])->assertSessionHasErrors('level');
+        ])->assertSessionHasErrors('category');
 
         $this->assertDatabaseMissing('skills', ['name' => 'Invalid Skill']);
     }
@@ -56,35 +55,35 @@ class TaxonomyCrudTest extends TestCase
     {
         Category::create(['name' => 'Web Application']);
 
-        $this->post(route('post.categories.store'), [
+        $this->post(route('admin.categories.store'), [
             'name' => 'Web Application',
         ])->assertSessionHasErrors('name');
     }
 
     public function test_category_can_be_created_and_deleted(): void
     {
-        $this->post(route('post.categories.store'), ['name' => 'Backend API'])
-            ->assertRedirect(route('post.categories.index'));
+        $this->post(route('admin.categories.store'), ['name' => 'Backend API'])
+            ->assertRedirect(route('admin.categories.index'));
 
         $category = Category::where('name', 'Backend API')->firstOrFail();
         $this->assertSame('backend-api', $category->slug);
 
-        $this->delete(route('post.categories.destroy', $category))
-            ->assertRedirect(route('post.categories.index'));
+        $this->delete(route('admin.categories.destroy', $category))
+            ->assertRedirect(route('admin.categories.index'));
 
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
 
     public function test_technology_can_be_created_and_deleted(): void
     {
-        $this->post(route('post.technologies.store'), ['name' => 'Docker'])
-            ->assertRedirect(route('post.technologies.index'));
+        $this->post(route('admin.technologies.store'), ['name' => 'Docker'])
+            ->assertRedirect(route('admin.technologies.index'));
 
         $technology = Technology::where('name', 'Docker')->firstOrFail();
         $this->assertSame('docker', $technology->slug);
 
-        $this->delete(route('post.technologies.destroy', $technology))
-            ->assertRedirect(route('post.technologies.index'));
+        $this->delete(route('admin.technologies.destroy', $technology))
+            ->assertRedirect(route('admin.technologies.index'));
 
         $this->assertDatabaseMissing('technologies', ['id' => $technology->id]);
     }
@@ -92,7 +91,7 @@ class TaxonomyCrudTest extends TestCase
     public function test_non_admin_cannot_manage_taxonomy(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'user']))
-            ->get(route('post.skills.index'))
+            ->get(route('admin.skills.index'))
             ->assertForbidden();
     }
 }

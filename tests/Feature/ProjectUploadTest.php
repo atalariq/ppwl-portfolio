@@ -25,15 +25,15 @@ class ProjectUploadTest extends TestCase
 
     public function test_store_saves_thumbnail_to_public_disk(): void
     {
-        $response = $this->post(route('post.projects.store'), [
+        $response = $this->post(route('admin.projects.store'), [
             'title' => 'Thumbnail Project',
-            'repo' => 'atalariq/thumbnail',
+            'repository_url' => 'https://github.com/atalariq/thumbnail',
             'description' => 'A sufficiently long description.',
             'status' => 'published',
             'thumbnail' => UploadedFile::fake()->image('thumbnail.jpg', 800, 600),
         ]);
 
-        $response->assertRedirect(route('post.projects.index'));
+        $response->assertRedirect(route('admin.projects.index'));
 
         $project = Project::where('title', 'Thumbnail Project')->firstOrFail();
         $this->assertNotNull($project->thumbnail);
@@ -47,21 +47,21 @@ class ProjectUploadTest extends TestCase
 
         $project = Project::create([
             'title' => 'Replace Thumbnail',
-            'repo' => 'atalariq/replace',
+            'repository_url' => 'https://github.com/atalariq/replace',
             'description' => 'A sufficiently long description.',
             'status' => 'draft',
             'thumbnail' => $oldPath,
         ]);
 
-        $response = $this->put(route('post.projects.update', $project), [
+        $response = $this->put(route('admin.projects.update', $project), [
             'title' => 'Replace Thumbnail',
-            'repo' => 'atalariq/replace',
+            'repository_url' => 'https://github.com/atalariq/replace',
             'description' => 'A sufficiently long description.',
             'status' => 'draft',
             'thumbnail' => UploadedFile::fake()->image('new.jpg', 800, 600),
         ]);
 
-        $response->assertRedirect(route('post.projects.index'));
+        $response->assertRedirect(route('admin.projects.index'));
 
         $project->refresh();
         $this->assertNotSame($oldPath, $project->thumbnail);
@@ -71,30 +71,30 @@ class ProjectUploadTest extends TestCase
 
     public function test_thumbnail_must_meet_minimum_dimensions(): void
     {
-        $response = $this->post(route('post.projects.store'), [
+        $response = $this->post(route('admin.projects.store'), [
             'title' => 'Small Thumbnail',
-            'repo' => 'atalariq/small',
+            'repository_url' => 'https://github.com/atalariq/small',
             'description' => 'A sufficiently long description.',
             'status' => 'draft',
             'thumbnail' => UploadedFile::fake()->image('small.jpg', 200, 200),
         ]);
 
         $response->assertSessionHasErrors('thumbnail');
-        $this->assertDatabaseMissing('projects', ['repo' => 'atalariq/small']);
+        $this->assertDatabaseMissing('projects', ['repository_url' => 'https://github.com/atalariq/small']);
     }
 
     public function test_thumbnail_must_be_an_image(): void
     {
-        $response = $this->post(route('post.projects.store'), [
+        $response = $this->post(route('admin.projects.store'), [
             'title' => 'PDF Thumbnail',
-            'repo' => 'atalariq/pdf',
+            'repository_url' => 'https://github.com/atalariq/pdf',
             'description' => 'A sufficiently long description.',
             'status' => 'draft',
             'thumbnail' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
         ]);
 
         $response->assertSessionHasErrors('thumbnail');
-        $this->assertDatabaseMissing('projects', ['repo' => 'atalariq/pdf']);
+        $this->assertDatabaseMissing('projects', ['repository_url' => 'https://github.com/atalariq/pdf']);
     }
 
     public function test_destroy_deletes_thumbnail_and_gallery_files(): void
@@ -106,7 +106,7 @@ class ProjectUploadTest extends TestCase
 
         $project = Project::create([
             'title' => 'Delete Files',
-            'repo' => 'atalariq/delete-files',
+            'repository_url' => 'https://github.com/atalariq/delete-files',
             'description' => 'A sufficiently long description.',
             'status' => 'draft',
             'thumbnail' => $thumbnail,
@@ -118,8 +118,8 @@ class ProjectUploadTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $this->delete(route('post.projects.destroy', $project))
-            ->assertRedirect(route('post.projects.index'));
+        $this->delete(route('admin.projects.destroy', $project))
+            ->assertRedirect(route('admin.projects.index'));
 
         Storage::disk('public')->assertMissing($thumbnail);
         Storage::disk('public')->assertMissing($gallery);

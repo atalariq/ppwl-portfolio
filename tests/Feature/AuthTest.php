@@ -14,6 +14,7 @@ class AuthTest extends TestCase
     {
         return User::factory()->create([
             'name' => 'Admin',
+            'username' => 'admin',
             'email' => 'admin@example.com',
             'role' => 'admin',
         ]);
@@ -49,11 +50,37 @@ class AuthTest extends TestCase
         $admin = $this->admin();
 
         $response = $this->post(route('login'), [
-            'email' => $admin->email,
+            'login' => $admin->email,
             'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('post.projects.index', absolute: false));
+        $response->assertRedirect(route('admin.projects.index', absolute: false));
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_admin_can_log_in_with_a_username(): void
+    {
+        $admin = $this->admin();
+
+        $response = $this->post(route('login'), [
+            'login' => 'admin',
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('admin.projects.index', absolute: false));
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_admin_can_log_in_with_an_email(): void
+    {
+        $admin = $this->admin();
+
+        $response = $this->post(route('login'), [
+            'login' => $admin->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('admin.projects.index', absolute: false));
         $this->assertAuthenticatedAs($admin);
     }
 
@@ -62,7 +89,7 @@ class AuthTest extends TestCase
         $user = $this->regularUser();
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'login' => $user->email,
             'password' => 'password',
         ]);
 
@@ -76,12 +103,12 @@ class AuthTest extends TestCase
         $user = $this->admin();
 
         $response = $this->from(route('login'))->post(route('login'), [
-            'email' => $user->email,
+            'login' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $response->assertRedirect(route('login'));
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('login');
         $this->assertGuest();
     }
 
@@ -91,17 +118,17 @@ class AuthTest extends TestCase
 
         foreach (range(1, 5) as $attempt) {
             $this->post(route('login'), [
-                'email' => $user->email,
+                'login' => $user->email,
                 'password' => 'wrong-password',
             ]);
         }
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'login' => $user->email,
             'password' => 'password',
         ]);
 
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('login');
         $this->assertGuest();
     }
 
@@ -117,20 +144,20 @@ class AuthTest extends TestCase
 
     public function test_guest_is_redirected_from_the_management_area_to_login(): void
     {
-        $this->get(route('post.projects.index'))->assertRedirect(route('login'));
+        $this->get(route('admin.projects.index'))->assertRedirect(route('login'));
     }
 
     public function test_non_admin_gets_forbidden_from_the_management_area(): void
     {
         $this->actingAs($this->regularUser())
-            ->get(route('post.projects.index'))
+            ->get(route('admin.projects.index'))
             ->assertForbidden();
     }
 
     public function test_admin_can_open_the_management_area(): void
     {
         $this->actingAs($this->admin())
-            ->get(route('post.projects.index'))
+            ->get(route('admin.projects.index'))
             ->assertOk();
     }
 
@@ -141,13 +168,16 @@ class AuthTest extends TestCase
             ->assertRedirect('/');
     }
 
-    public function test_profile_page_requires_login_and_is_available_to_non_admin(): void
+    public function test_profile_page_requires_login_and_admin_access(): void
     {
-        $this->get(route('post.profile.edit'))->assertRedirect(route('login'));
+        $this->get(route('admin.profile.edit'))->assertRedirect(route('login'));
 
         $this->actingAs($this->regularUser())
-            ->get(route('post.profile.edit'))
-            ->assertOk()
-            ->assertSee('Regular User');
+            ->get(route('admin.profile.edit'))
+            ->assertForbidden();
+
+        $this->actingAs($this->admin())
+            ->get(route('admin.profile.edit'))
+            ->assertOk();
     }
 }

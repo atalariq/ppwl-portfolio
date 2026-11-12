@@ -26,7 +26,7 @@ class ProjectGalleryTest extends TestCase
 
         $this->project = Project::create([
             'title' => 'Gallery Project',
-            'repo' => 'atalariq/gallery',
+            'repository_url' => 'https://github.com/atalariq/gallery',
             'description' => 'A sufficiently long description.',
             'status' => 'published',
         ]);
@@ -34,7 +34,7 @@ class ProjectGalleryTest extends TestCase
 
     public function test_multiple_images_are_uploaded_and_ordered(): void
     {
-        $response = $this->post(route('post.projects.images.store', $this->project), [
+        $response = $this->post(route('admin.projects.images.store', $this->project), [
             'images' => [
                 UploadedFile::fake()->image('one.jpg', 800, 600),
                 UploadedFile::fake()->image('two.jpg', 800, 600),
@@ -62,7 +62,7 @@ class ProjectGalleryTest extends TestCase
             ]);
         }
 
-        $response = $this->post(route('post.projects.images.store', $this->project), [
+        $response = $this->post(route('admin.projects.images.store', $this->project), [
             'images' => [
                 UploadedFile::fake()->image('ten.jpg', 800, 600),
                 UploadedFile::fake()->image('eleven.jpg', 800, 600),
@@ -82,7 +82,7 @@ class ProjectGalleryTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $response = $this->put(route('post.projects.images.update', [$this->project, $image]), [
+        $response = $this->put(route('admin.projects.images.update', [$this->project, $image]), [
             'caption' => 'New caption',
         ]);
 
@@ -103,7 +103,7 @@ class ProjectGalleryTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $this->delete(route('post.projects.images.destroy', [$this->project, $image]))
+        $this->delete(route('admin.projects.images.destroy', [$this->project, $image]))
             ->assertRedirect();
 
         Storage::disk('public')->assertMissing('projects/gallery/delete.jpg');
@@ -114,7 +114,7 @@ class ProjectGalleryTest extends TestCase
     {
         $other = Project::create([
             'title' => 'Other Project',
-            'repo' => 'atalariq/other',
+            'repository_url' => 'https://github.com/atalariq/other',
             'description' => 'Another project description.',
             'status' => 'draft',
         ]);
@@ -125,7 +125,7 @@ class ProjectGalleryTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $this->delete(route('post.projects.images.destroy', [$this->project, $image]))
+        $this->delete(route('admin.projects.images.destroy', [$this->project, $image]))
             ->assertNotFound();
 
         $this->assertDatabaseHas('project_images', ['id' => $image->id]);

@@ -21,13 +21,13 @@ class DashboardTest extends TestCase
 
     public function test_guest_is_redirected_from_dashboard(): void
     {
-        $this->get(route('post.dashboard'))->assertRedirect(route('login'));
+        $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
     }
 
     public function test_non_admin_is_forbidden_from_dashboard(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'user']))
-            ->get(route('post.dashboard'))
+            ->get(route('admin.dashboard'))
             ->assertForbidden();
     }
 
@@ -35,12 +35,12 @@ class DashboardTest extends TestCase
     {
         $category = Category::create(['name' => 'Web Application']);
         Technology::create(['name' => 'Laravel']);
-        Skill::create(['name' => 'PHP', 'level' => 90]);
-        Skill::create(['name' => 'Laravel', 'level' => 95]);
+        Skill::create(['name' => 'PHP', 'category' => 'Languages']);
+        Skill::create(['name' => 'Laravel', 'category' => 'Frameworks']);
 
         Project::create([
             'title' => 'Published Project',
-            'repo' => 'atalariq/published',
+            'repository_url' => 'https://github.com/atalariq/published',
             'description' => 'A published project description.',
             'status' => 'published',
             'category_id' => $category->id,
@@ -48,19 +48,20 @@ class DashboardTest extends TestCase
 
         Project::create([
             'title' => 'Draft Project',
-            'repo' => 'atalariq/draft',
+            'repository_url' => 'https://github.com/atalariq/draft',
             'description' => 'A draft project description.',
             'status' => 'draft',
             'category_id' => $category->id,
         ]);
 
-        $response = $this->actingAs($this->admin())->get(route('post.dashboard'));
+        $response = $this->actingAs($this->admin())->get(route('admin.dashboard'));
 
         $response->assertOk()
             ->assertSee('Published')
             ->assertSee('Draft')
-            ->assertSee('PHP')
-            ->assertSee('Laravel')
+            ->assertSee('Skills by category')
+            ->assertSee('Languages')
+            ->assertSee('Frameworks')
             ->assertSee('Web Application');
 
         $this->assertSame(2, Project::count());

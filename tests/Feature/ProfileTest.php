@@ -14,26 +14,26 @@ class ProfileTest extends TestCase
 
     public function test_profile_page_is_displayed_for_authenticated_user(): void
     {
-        $this->actingAs(User::factory()->create())
-            ->get(route('post.profile.edit'))
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
+            ->get(route('admin.profile.edit'))
             ->assertOk();
     }
 
     public function test_guest_is_redirected_from_profile_page(): void
     {
-        $this->get(route('post.profile.edit'))->assertRedirect(route('login'));
+        $this->get(route('admin.profile.edit'))->assertRedirect(route('login'));
     }
 
     public function test_profile_information_can_be_updated(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($user)->patch(route('post.profile.update'), [
+        $response = $this->actingAs($user)->patch(route('admin.profile.update'), [
             'name' => 'Updated User',
             'email' => 'updated@example.com',
         ]);
 
-        $response->assertSessionHasNoErrors()->assertRedirect(route('post.profile.edit'));
+        $response->assertSessionHasNoErrors()->assertRedirect(route('admin.profile.edit'));
 
         $user->refresh();
         $this->assertSame('Updated User', $user->name);
@@ -45,9 +45,9 @@ class ProfileTest extends TestCase
         Storage::fake('public');
         Storage::disk('public')->put('avatars/old.jpg', 'old');
 
-        $user = User::factory()->create(['avatar' => 'avatars/old.jpg']);
+        $user = User::factory()->create(['role' => 'admin', 'avatar' => 'avatars/old.jpg']);
 
-        $response = $this->actingAs($user)->patch(route('post.profile.update'), [
+        $response = $this->actingAs($user)->patch(route('admin.profile.update'), [
             'name' => $user->name,
             'email' => $user->email,
             'avatar' => UploadedFile::fake()->image('avatar.jpg', 400, 400),
@@ -64,9 +64,9 @@ class ProfileTest extends TestCase
     public function test_avatar_must_meet_minimum_dimensions(): void
     {
         Storage::fake('public');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($user)->patch(route('post.profile.update'), [
+        $response = $this->actingAs($user)->patch(route('admin.profile.update'), [
             'name' => $user->name,
             'email' => $user->email,
             'avatar' => UploadedFile::fake()->image('small-avatar.jpg', 100, 100),
