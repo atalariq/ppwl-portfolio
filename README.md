@@ -24,10 +24,11 @@ mise run setup
 mise run dev
 ```
 
-Open <http://127.0.0.1:8000>. Use the seeded admin account:
+Open <http://127.0.0.1:8000>. The admin area lives at <http://127.0.0.1:8000/admin>.
+Use the seeded accounts:
 
-- `admin@example.com` / `password123` (admin)
-- `test@example.com` / `password` (non-admin, for 403 checks)
+- `admin` or `admin@example.com` / `password123` (admin)
+- `test` or `test@example.com` / `password` (non-admin, for 403 checks)
 
 Always use `127.0.0.1`, not `localhost`, so cookies, assets, and redirects stay on
 one host.
@@ -37,12 +38,19 @@ one host.
 | Command | Purpose |
 |---|---|
 | `mise run setup` | Create `.env`, generate key, start DB, install dependencies, migrate, seed, link storage, build assets |
-| `mise run dev` | Start DB, Laravel on `127.0.0.1:8000`, and Vite |
+| `mise run dev` | Start DB, Laravel on `127.0.0.1:8000`, and Vite; uploads allow 8 MB per file and 64 MB per request |
 | `mise run test` | Run PHPUnit |
 | `mise run build` | Build production assets |
 | `mise run fresh` | Recreate the local database and seed demo data |
 | `mise run check` | Pint, tests, and asset build |
 | `mise run db:up` / `db:down` | Start or stop MariaDB |
+
+## Upload limits
+
+Local `mise run dev` raises PHP's upload limits to 8 MB per file and 64 MB per
+request. Validation still caps thumbnails, avatars, and gallery images at 4 MB
+per file. The production image ships the same limits in `docker/php.ini` and
+`docker/nginx.conf`.
 
 The database runs in Podman/Docker on `127.0.0.1:3306`. The credentials live in
 `.env` and match `compose.yaml`.

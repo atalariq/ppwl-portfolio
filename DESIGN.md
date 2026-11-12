@@ -57,13 +57,23 @@ All in `resources/views/components/ui/`:
 | `x-ui.nav-link` | Public navigation link |
 | `x-ui.sidebar-link` | Admin sidebar link |
 
+## Public page rhythm
+
+- Every public page starts with `x-ui.page-header` and `mt-10` content.
+- The page header uses an optional eyebrow, a `text-3xl sm:text-4xl` title, a `text-base` description, and a bottom divider.
+- The public navbar is sticky; `html` reserves a stable scrollbar gutter so content does not shift between pages.
+- Experience and Education share the `x-ui.entry-card` grid with About's card rhythm.
+- Projects and the Home carousel share `x-project-card`.
+- Projects use a three-column desktop grid; the carousel is manual scroll-snap with arrows and dots, never autoplay.
+- Skills are grouped chips by category; numeric levels are not used.
+
 ## Layouts
 
 - `layouts.app`: public navbar/footer, `container-page`.
 - `layouts.admin`: CSS-only sidebar drawer, topbar, `container-admin`.
 - `layouts.auth`: centered card for login/reset pages.
 
-Mobile navigation uses native `<details>`; there is no JavaScript bundle.
+Mobile navigation uses native `<details>`; a small vanilla JS entry powers dialogs, quick edit, bulk actions, and upload previews. There is no client-side framework.
 
 ## Rules
 
@@ -72,4 +82,4 @@ Mobile navigation uses native `<details>`; there is no JavaScript bundle.
 3. Forms always use `x-ui.field` so labels and errors are consistent.
 4. Tables use `.table`; wrap them in an overflow container on small screens.
 5. Empty results use `x-ui.empty-state`.
-6. The styleguide at `/post/styleguide` is the visual reference.
+6. Keep public pages on the shared page-header + card rhythm; there is no public styleguide route.

@@ -32,7 +32,8 @@ frontend.
 mise run dev
 ```
 
-Open <http://127.0.0.1:8000>. Use the seeded admin account from `README.md`.
+Open <http://127.0.0.1:8000>. The admin area is at <http://127.0.0.1:8000/admin>.
+Use the seeded admin account from `README.md` (`admin` / `password123`).
 
 ## 4. Stop
 
@@ -51,6 +52,13 @@ podman-compose -p ppwl-prod -f compose.prod.yaml run --rm app php artisan migrat
 
 Open <http://127.0.0.1:8080>. Replace `podman-compose` with `docker compose` if
 using Docker. The app runs PHP-FPM behind nginx; `Dockerfile` is Podman-compatible.
+
+## Upload limits
+
+`mise run dev` starts PHP with `upload_max_filesize=8M` and
+`post_max_size=64M`. The production image mirrors this through `docker/php.ini`
+and `docker/nginx.conf`. Application validation still limits each thumbnail,
+avatar, and gallery image to 4 MB.
 
 ## Troubleshooting
 
@@ -79,5 +87,5 @@ php artisan migrate --seed
 php artisan storage:link
 npm ci
 npm run build
-php artisan serve --host=127.0.0.1 --port=8000 --no-reload
+php -d upload_max_filesize=8M -d post_max_size=64M artisan serve --host=127.0.0.1 --port=8000 --no-reload
 ```

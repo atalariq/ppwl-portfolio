@@ -5,11 +5,41 @@ add a new section every Thursday after the practicum.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Pertemuan 11] - 2026-11-12
+
+Search, filter, sorting, and a more complete portfolio admin.
+
+### Added
+
+- Project detail columns, public search, category and technology filters, four sort modes, and per-page pagination.
+- Real project, skill, about, and contact seed data with committed seed images.
+- About profile and contact CRUD; public About page is data-driven.
+- Quick edit, bulk actions, and bulk add for projects, categories, skills, and technologies.
+- Lucide icon actions, custom confirmation dialogs, profile dropdown, username login, and upload dropzones.
+- Friendly 413/419 handling and larger local/production upload limits.
+- Unified public page rhythm, Experience/Education entry-card grid, shared project card, and a featured-project carousel.
+- Skills grouped by capability without subjective levels; curated technology tags; letter A favicon.
+
+### Changed
+
+- Admin area moved from `/post/*` to `/admin/*`; legacy `/post/*` URLs redirect.
+- Public UI and admin UI use English consistently.
+- `repo` became `repository_url`; short and long project descriptions are separate fields.
+- Project cards use a thumbnail, first gallery image, or placeholder fallback.
+- Projects use a three-column desktop grid, matching the default nine items per page.
+- Technology tags are limited to the stack actually used by the seeded projects.
+
+### Removed
+
+- Public styleguide route and view.
+
+Commits: `f1c6ba1`, `0a4bb81`, `02ee91e`, `597c988`, `7df34e8`, `1f2fdbe`.
+
 ## [Unreleased]
 
 ### Added
 
-- Custom design system: Tailwind 4 tokens, UI Blade components, styleguide page.
+- Custom design system: Tailwind 4 tokens and UI Blade components.
 - `mise` tasks and a Podman/Docker MariaDB service.
 - Full container image (`Dockerfile`, `compose.prod.yaml`) for deploy/demo.
 - `CHANGELOG.md` and this update process.
@@ -19,7 +49,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Local development moved from devenv/Lerd/Herd to `mise` + Podman/Docker.
 - Canonical local URL is `http://127.0.0.1:8000`; cookie/session/Vite hosts are aligned.
 - Public, admin, and auth layouts share one design system.
-- Removed Alpine and unused Breeze components; frontend build is CSS-only.
+- Removed Alpine and unused Breeze components; frontend build uses Tailwind plus a small vanilla JS entry for dialogs, quick edit, bulk actions, and upload previews.
 - Removed unused Composer/npm packages.
 
 ### Fixed
