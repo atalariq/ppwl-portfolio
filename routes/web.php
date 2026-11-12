@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ProfileController;
@@ -16,25 +18,78 @@ Route::get('/experience', [PortfolioController::class, 'experience'])->name('exp
 Route::get('/education', [PortfolioController::class, 'education'])->name('education');
 
 Route::get('/projects', [ProjectController::class, 'publicIndex'])->name('projects.index');
-Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
 
-Route::prefix('post')->name('post.')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', fn () => redirect()->route('admin.dashboard'))->name('home');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::view('styleguide', 'post.styleguide')->name('styleguide');
 
-    Route::resource('projects', ProjectController::class);
+    Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('projects/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::post('projects/bulk', [ProjectController::class, 'bulk'])->name('projects.bulk');
+    Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+    Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+    Route::patch('projects/{project}/quick', [ProjectController::class, 'quickUpdate'])->name('projects.quick-update');
+    Route::delete('projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+
     Route::post('projects/{project}/images', [ProjectGalleryController::class, 'store'])->name('projects.images.store');
     Route::put('projects/{project}/images/{image}', [ProjectGalleryController::class, 'update'])->name('projects.images.update');
     Route::delete('projects/{project}/images/{image}', [ProjectGalleryController::class, 'destroy'])->name('projects.images.destroy');
 
-    Route::resource('categories', CategoryController::class)->except(['show']);
-    Route::resource('technologies', TechnologyController::class)->except(['show']);
-    Route::resource('skills', SkillController::class)->except(['show']);
+    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('categories/bulk', [CategoryController::class, 'bulk'])->name('categories.bulk');
+    Route::post('categories/bulk-store', [CategoryController::class, 'bulkStore'])->name('categories.bulk-store');
+    Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::patch('categories/{category}/quick', [CategoryController::class, 'quickUpdate'])->name('categories.quick-update');
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::get('technologies', [TechnologyController::class, 'index'])->name('technologies.index');
+    Route::get('technologies/create', [TechnologyController::class, 'create'])->name('technologies.create');
+    Route::post('technologies', [TechnologyController::class, 'store'])->name('technologies.store');
+    Route::post('technologies/bulk', [TechnologyController::class, 'bulk'])->name('technologies.bulk');
+    Route::post('technologies/bulk-store', [TechnologyController::class, 'bulkStore'])->name('technologies.bulk-store');
+    Route::get('technologies/{technology}/edit', [TechnologyController::class, 'edit'])->name('technologies.edit');
+    Route::put('technologies/{technology}', [TechnologyController::class, 'update'])->name('technologies.update');
+    Route::patch('technologies/{technology}/quick', [TechnologyController::class, 'quickUpdate'])->name('technologies.quick-update');
+    Route::delete('technologies/{technology}', [TechnologyController::class, 'destroy'])->name('technologies.destroy');
+
+    Route::get('skills', [SkillController::class, 'index'])->name('skills.index');
+    Route::get('skills/create', [SkillController::class, 'create'])->name('skills.create');
+    Route::post('skills', [SkillController::class, 'store'])->name('skills.store');
+    Route::post('skills/bulk', [SkillController::class, 'bulk'])->name('skills.bulk');
+    Route::post('skills/bulk-store', [SkillController::class, 'bulkStore'])->name('skills.bulk-store');
+    Route::get('skills/{skill}/edit', [SkillController::class, 'edit'])->name('skills.edit');
+    Route::put('skills/{skill}', [SkillController::class, 'update'])->name('skills.update');
+    Route::patch('skills/{skill}/quick', [SkillController::class, 'quickUpdate'])->name('skills.quick-update');
+    Route::delete('skills/{skill}', [SkillController::class, 'destroy'])->name('skills.destroy');
+
+    Route::get('about', [AboutController::class, 'edit'])->name('about.edit');
+    Route::put('about', [AboutController::class, 'update'])->name('about.update');
+
+    Route::get('contacts/create', [ContactController::class, 'create'])->name('contacts.create');
+    Route::post('contacts', [ContactController::class, 'store'])->name('contacts.store');
+    Route::get('contacts/{contact}/edit', [ContactController::class, 'edit'])->name('contacts.edit');
+    Route::put('contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
+    Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
+
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::prefix('post')->name('post.')->middleware('auth')->group(function () {
-    Route::get('profile-saya', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile-saya', [ProfileController::class, 'update'])->name('profile.update');
-});
+Route::get('/post/{path?}', function (?string $path = null) {
+    $path = trim((string) $path, '/');
+    $path = match ($path) {
+        '', 'dashboard' => 'dashboard',
+        'profile-saya' => 'profile',
+        'styleguide' => 'dashboard',
+        default => $path,
+    };
+
+    return redirect()->to('/admin/'.$path, 301);
+})->where('path', '.*');
 
 require __DIR__.'/auth.php';

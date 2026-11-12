@@ -13,7 +13,7 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        return view('post.dashboard.index', [
+        return view('admin.dashboard.index', [
             'totalProjects' => Project::count(),
             'publishedProjects' => Project::where('status', 'published')->count(),
             'draftProjects' => Project::where('status', 'draft')->count(),
@@ -21,8 +21,12 @@ class DashboardController extends Controller
             'totalTechnologies' => Technology::count(),
             'totalSkills' => Skill::count(),
             'totalGalleryImages' => ProjectImage::count(),
-            'latestProjects' => Project::with('category')->latest()->take(5)->get(),
-            'topSkills' => Skill::orderByDesc('level')->orderBy('name')->take(5)->get(),
+            'latestProjects' => Project::with(['category', 'images'])->latest()->take(5)->get(),
+            'skillsByCategory' => Skill::query()
+                ->selectRaw('category, count(*) as total')
+                ->groupBy('category')
+                ->orderBy('category')
+                ->get(),
             'categories' => Category::withCount('projects')->orderByDesc('projects_count')->orderBy('name')->get(),
         ]);
     }

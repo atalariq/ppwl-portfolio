@@ -22,7 +22,7 @@ class ProjectGalleryController extends Controller
 
         if ($existing + $incoming > 10) {
             throw ValidationException::withMessages([
-                'images' => 'Maksimal 10 gambar per project. Saat ini tersimpan '.$existing.' gambar.',
+                'images' => 'A project can have at most 10 gallery images. Currently saved: '.$existing.'.',
             ]);
         }
 
@@ -37,7 +37,7 @@ class ProjectGalleryController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Gambar gallery berhasil diunggah.');
+        return back()->with('success', 'Gallery images uploaded.');
     }
 
     public function update(Request $request, Project $project, ProjectImage $image)
@@ -50,7 +50,7 @@ class ProjectGalleryController extends Controller
 
         $image->update($validated);
 
-        return back()->with('success', 'Caption gambar diperbarui.');
+        return back()->with('success', 'Image caption updated.');
     }
 
     public function destroy(Project $project, ProjectImage $image)
@@ -60,6 +60,6 @@ class ProjectGalleryController extends Controller
         Storage::disk('public')->delete($image->image);
         $image->delete();
 
-        return back()->with('success', 'Gambar gallery dihapus.');
+        return back()->with('success', 'Gallery image deleted.');
     }
 }

@@ -30,10 +30,10 @@ class AuthenticatedSessionController extends Controller
 
         if ($request->user()->role !== 'admin') {
             return redirect()->route('home')
-                ->with('status', 'Akun ini tidak memiliki akses ke area pengelolaan.');
+                ->with('status', 'This account does not have access to the admin area.');
         }
 
-        return redirect()->intended(route('post.projects.index', absolute: false));
+        return redirect()->intended(route('admin.projects.index', absolute: false));
     }
 
     /**

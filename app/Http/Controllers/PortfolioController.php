@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AboutProfile;
+use App\Models\Contact;
 use App\Models\Education;
 use App\Models\Experience;
+use App\Models\Project;
+use App\Models\Skill;
 use Illuminate\View\View;
 
 class PortfolioController extends Controller
@@ -11,24 +15,24 @@ class PortfolioController extends Controller
     public function home(): View
     {
         return view('home', [
-            'name' => 'Atalariq Barra Hadinugraha',
-            'role' => 'Software Engineering Student at UGM',
-            'summary' => 'Technical journey started from fixing a wiped Windows with Linux CLI. Focus on site reliability, speed optimization, and clean publishing workflows.',
+            'profile' => AboutProfile::current(),
+            'featuredProjects' => Project::query()
+                ->published()
+                ->featured()
+                ->with(['category', 'technologies', 'images'])
+                ->orderByDesc('project_date')
+                ->orderByDesc('id')
+                ->take(5)
+                ->get(),
         ]);
     }
 
     public function about(): View
     {
         return view('about', [
-            'email' => 'atalariq.dev@outlook.com',
-            'contact' => 'wa.me/62859106987796',
-            'skills' => [
-                'Programming Languages' => 'JavaScript/TypeScript, PHP, Go',
-                'Frameworks' => 'Laravel',
-                'Tools' => 'Linux/CLI, Git & GitHub, Docker, Neovim',
-                'Languages' => 'Bahasa Indonesia (Fluent), English (Intermediate)',
-                'Interest' => 'Cyber Security, DevOps, Infrastructure, Optimization',
-            ],
+            'profile' => AboutProfile::current(),
+            'contacts' => Contact::query()->ordered()->get(),
+            'skillGroups' => Skill::query()->ordered()->get()->groupBy('category'),
         ]);
     }
 

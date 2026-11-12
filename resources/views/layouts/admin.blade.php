@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') — Atalariq Portfolio</title>
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-full bg-surface-muted">
     <input id="sidebar-toggle" type="checkbox" class="peer sr-only lg:hidden">
@@ -16,15 +19,15 @@
         </div>
 
         <nav class="space-y-1 px-3 py-4" aria-label="Admin">
-            <x-ui.sidebar-link :href="route('post.dashboard')" :active="request()->routeIs('post.dashboard')">Dashboard</x-ui.sidebar-link>
-            <x-ui.sidebar-link :href="route('post.projects.index')" :active="request()->routeIs('post.projects.*')">Projects</x-ui.sidebar-link>
-            <x-ui.sidebar-link :href="route('post.categories.index')" :active="request()->routeIs('post.categories.*')">Categories</x-ui.sidebar-link>
-            <x-ui.sidebar-link :href="route('post.technologies.index')" :active="request()->routeIs('post.technologies.*')">Technologies</x-ui.sidebar-link>
-            <x-ui.sidebar-link :href="route('post.skills.index')" :active="request()->routeIs('post.skills.*')">Skills</x-ui.sidebar-link>
-            <x-ui.sidebar-link :href="route('post.profile.edit')" :active="request()->routeIs('post.profile.*')">Profile</x-ui.sidebar-link>
-            <x-ui.sidebar-link :href="route('post.styleguide')" :active="request()->routeIs('post.styleguide')">Styleguide</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">Dashboard</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.projects.index')" :active="request()->routeIs('admin.projects.*')">Projects</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">Categories</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.technologies.index')" :active="request()->routeIs('admin.technologies.*')">Technologies</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.skills.index')" :active="request()->routeIs('admin.skills.*')">Skills</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.about.edit')" :active="request()->routeIs('admin.about.*')">About</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.profile.edit')" :active="request()->routeIs('admin.profile.*')">Profile</x-ui.sidebar-link>
             <div class="my-3 border-t border-slate-800"></div>
-            <x-ui.sidebar-link :href="route('home')">View site</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('projects.index')">View site</x-ui.sidebar-link>
         </nav>
     </aside>
 
@@ -38,17 +41,25 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <div class="hidden text-right sm:block">
-                    <p class="text-sm font-medium">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-muted">{{ ucfirst(auth()->user()->role) }}</p>
+            <details class="relative">
+                <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-muted transition hover:bg-slate-100 hover:text-text">
+                    <x-ui.avatar :user="auth()->user()" />
+                    <span class="hidden max-w-32 truncate sm:inline">{{ auth()->user()->name }}</span>
+                    <x-ui.icon name="chevron-down" class="h-3.5 w-3.5" />
+                </summary>
+                <div class="absolute right-0 z-30 mt-2 w-56 rounded-lg border border-border bg-white p-2 shadow-lg">
+                    <x-ui.nav-link :href="route('admin.dashboard')">Dashboard</x-ui.nav-link>
+                    <x-ui.nav-link :href="route('admin.profile.edit')">Profile</x-ui.nav-link>
+                    <x-ui.nav-link :href="route('projects.index')">View site</x-ui.nav-link>
+                    <div class="my-2 border-t border-border"></div>
+                    <form method="POST" action="{{ route('logout') }}" data-confirm="Log out of your account?" data-confirm-title="Log out">
+                        @csrf
+                        <button type="submit" class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-danger transition hover:bg-red-50">
+                            <x-ui.icon name="log-out" class="h-4 w-4" /> Log out
+                        </button>
+                    </form>
                 </div>
-                <x-ui.avatar :user="auth()->user()" />
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-ui.button variant="ghost" size="sm" type="submit">Logout</x-ui.button>
-                </form>
-            </div>
+            </details>
         </header>
 
         <main class="container-admin py-8">
@@ -58,9 +69,24 @@
             @if (session('status'))
                 <x-ui.alert variant="info" class="mb-4">{{ session('status') }}</x-ui.alert>
             @endif
+            @if (session('error'))
+                <x-ui.alert variant="danger" class="mb-4">{{ session('error') }}</x-ui.alert>
+            @endif
+            @if ($errors->any())
+                <x-ui.alert variant="danger" class="mb-4">
+                    <p class="font-medium">Please check the form and try again.</p>
+                    <ul class="mt-1 list-disc space-y-1 pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-ui.alert>
+            @endif
 
             @yield('content')
         </main>
     </div>
+
+    <x-ui.confirm-dialog />
 </body>
 </html>
