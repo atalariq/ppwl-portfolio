@@ -15,8 +15,8 @@
     </x-ui.page-header>
 
     <form method="GET" action="{{ route('projects.index') }}" class="card card-body mt-10">
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <x-ui.field label="Search" name="search">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+            <x-ui.field label="Search" name="search" class="md:col-span-2 xl:col-span-2">
                 <input id="search" type="search" name="search" value="{{ request('search') }}" placeholder="Title or description…" class="input">
             </x-ui.field>
 
@@ -38,23 +38,21 @@
                 </select>
             </x-ui.field>
 
-            <div class="grid grid-cols-2 gap-3">
-                <x-ui.field label="Sort" name="sort">
-                    <select id="sort" name="sort" class="select">
-                        <option value="newest" @selected(request('sort', 'newest') === 'newest')>Newest</option>
-                        <option value="oldest" @selected(request('sort') === 'oldest')>Oldest</option>
-                        <option value="title" @selected(request('sort') === 'title')>Title A–Z</option>
-                        <option value="project_date" @selected(request('sort') === 'project_date')>Project date</option>
-                    </select>
-                </x-ui.field>
-                <x-ui.field label="Per page" name="per_page">
-                    <select id="per_page" name="per_page" class="select">
-                        @foreach ([9, 18, 27] as $size)
-                            <option value="{{ $size }}" @selected((int) request('per_page', 9) === $size)>{{ $size }}</option>
-                        @endforeach
-                    </select>
-                </x-ui.field>
-            </div>
+            <x-ui.field label="Sort" name="sort">
+                <select id="sort" name="sort" class="select">
+                    <option value="newest" @selected(request('sort', 'newest') === 'newest')>Newest</option>
+                    <option value="oldest" @selected(request('sort') === 'oldest')>Oldest</option>
+                    <option value="title" @selected(request('sort') === 'title')>Title A–Z</option>
+                    <option value="project_date" @selected(request('sort') === 'project_date')>Project date</option>
+                </select>
+            </x-ui.field>
+            <x-ui.field label="Per page" name="per_page">
+                <select id="per_page" name="per_page" class="select">
+                    @foreach ([9, 18, 27] as $size)
+                        <option value="{{ $size }}" @selected((int) request('per_page', 9) === $size)>{{ $size }}</option>
+                    @endforeach
+                </select>
+            </x-ui.field>
         </div>
 
         <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
