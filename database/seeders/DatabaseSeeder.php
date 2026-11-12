@@ -8,15 +8,13 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin',
+                'name' => 'Atalariq Barra',
+                'username' => 'admin',
                 'password' => Hash::make('password123'),
                 'role' => 'admin',
             ],
@@ -26,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
+                'username' => 'test',
                 'password' => Hash::make('password'),
                 'role' => 'user',
             ],
@@ -37,6 +36,8 @@ class DatabaseSeeder extends Seeder
             SkillSeeder::class,
             ExperienceSeeder::class,
             EducationSeeder::class,
+            AboutProfileSeeder::class,
+            ContactSeeder::class,
             ProjectSeeder::class,
         ]);
     }

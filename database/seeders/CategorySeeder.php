@@ -10,14 +10,30 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = [
-            'Web Application',
-            'Backend API',
-            'Command Line Tool',
-            'Design System',
+        $renames = [
+            'web-application' => ['Web', 'web'],
+            'backend-api' => ['API', 'api'],
+            'command-line-tool' => ['Tool', 'tool'],
         ];
 
-        foreach ($categories as $name) {
+        foreach ($renames as $oldSlug => [$name, $slug]) {
+            $old = Category::query()->where('slug', $oldSlug)->first();
+
+            if (! $old) {
+                continue;
+            }
+
+            $existing = Category::query()->where('slug', $slug)->whereKeyNot($old->id)->first();
+
+            if ($existing) {
+                $old->projects()->update(['category_id' => $existing->id]);
+                $old->delete();
+            } else {
+                $old->update(['name' => $name, 'slug' => $slug]);
+            }
+        }
+
+        foreach (['Web', 'API', 'Mobile', 'Design System', 'Tool'] as $name) {
             Category::updateOrCreate(
                 ['slug' => Str::slug($name)],
                 ['name' => $name],

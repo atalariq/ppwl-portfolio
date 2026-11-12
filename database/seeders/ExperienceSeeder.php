@@ -14,14 +14,14 @@ class ExperienceSeeder extends Seeder
                 'role' => 'Hacker (Backend)',
                 'organization' => 'Google Developer Group of Campus UGM',
                 'period' => 'Dec 2025 - Present',
-                'description' => 'Membangun Menu Catalog API dan berkontribusi pada beberapa proyek komunitas.',
+                'description' => 'Building the Menu Catalog API and contributing to several community projects.',
                 'sort_order' => 1,
             ],
             [
                 'role' => 'Web Maintainer',
                 'organization' => 'Freelance',
                 'period' => '2024 - Present',
-                'description' => 'Mengelola WordPress dan CMS, dengan fokus pada keandalan situs dan optimasi kecepatan.',
+                'description' => 'Maintaining WordPress and CMS sites with a focus on reliability and speed.',
                 'sort_order' => 2,
             ],
         ];
