@@ -23,7 +23,7 @@ description = "Start MariaDB, Laravel on 127.0.0.1:8000, and Vite"
 run = """
 set -eu
 mise run db:up
-php artisan serve --host=127.0.0.1 --port=8000 --no-reload &
+php -d upload_max_filesize=8M -d post_max_size=64M artisan serve --host=127.0.0.1 --port=8000 --no-reload &
 SERVER_PID=$!
 trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT INT TERM
 npm run dev
