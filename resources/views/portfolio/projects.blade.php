@@ -15,12 +15,12 @@
     </x-ui.page-header>
 
     <form method="GET" action="{{ route('projects.index') }}" class="card card-body mt-10">
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-            <x-ui.field label="Search" name="search" class="md:col-span-2 xl:col-span-2">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
+            <x-ui.field label="Search" name="search" class="md:col-span-2 xl:col-span-3">
                 <input id="search" type="search" name="search" value="{{ request('search') }}" placeholder="Title or description…" class="input">
             </x-ui.field>
 
-            <x-ui.field label="Category" name="category">
+            <x-ui.field label="Category" name="category" class="xl:col-span-2">
                 <select id="category" name="category" class="select">
                     <option value="">All categories</option>
                     @foreach ($categories as $category)
@@ -29,7 +29,7 @@
                 </select>
             </x-ui.field>
 
-            <x-ui.field label="Technology" name="technology">
+            <x-ui.field label="Technology" name="technology" class="md:col-span-2 xl:col-span-3">
                 <select id="technology" name="technology" class="select">
                     <option value="">All technologies</option>
                     @foreach ($technologies as $technology)
@@ -38,7 +38,7 @@
                 </select>
             </x-ui.field>
 
-            <x-ui.field label="Sort" name="sort">
+            <x-ui.field label="Sort" name="sort" class="xl:col-span-2">
                 <select id="sort" name="sort" class="select">
                     <option value="newest" @selected(request('sort', 'newest') === 'newest')>Newest</option>
                     <option value="oldest" @selected(request('sort') === 'oldest')>Oldest</option>
@@ -46,7 +46,7 @@
                     <option value="project_date" @selected(request('sort') === 'project_date')>Project date</option>
                 </select>
             </x-ui.field>
-            <x-ui.field label="Per page" name="per_page">
+            <x-ui.field label="Per page" name="per_page" class="xl:col-span-2">
                 <select id="per_page" name="per_page" class="select">
                     @foreach ([9, 18, 27] as $size)
                         <option value="{{ $size }}" @selected((int) request('per_page', 9) === $size)>{{ $size }}</option>
