@@ -1,24 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Experience — Portfolio')
+@section('title', 'Experience — Atalariq Portfolio')
+@section('meta_description', 'Organizational experience and technical contributions by Atalariq Barra Hadinugraha.')
 
 @section('content')
     <x-ui.page-header title="Experience" description="Organizational experience and technical contributions." />
 
-    <div class="mt-8 space-y-4">
+    <div class="mt-10 grid gap-4 sm:grid-cols-2">
         @forelse ($experiences as $experience)
-            <article class="card card-body">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <h2 class="text-lg font-semibold">{{ $experience->role }}</h2>
-                    <span class="text-sm text-muted">{{ $experience->period }}</span>
-                </div>
-                <p class="mt-1 text-sm font-medium text-brand-700">{{ $experience->organization }}</p>
-                @if ($experience->description)
-                    <p class="mt-3 text-sm leading-relaxed">{{ $experience->description }}</p>
-                @endif
-            </article>
+            <x-ui.entry-card
+                :period="$experience->period"
+                :title="$experience->role"
+                :subtitle="$experience->organization"
+                :description="$experience->description"
+            />
         @empty
-            <x-ui.empty-state title="Belum ada pengalaman" description="Data pengalaman akan tampil setelah seeder dijalankan." />
+            <x-ui.empty-state class="sm:col-span-2" title="No experience yet" description="Experience entries will appear here once they are added." />
         @endforelse
     </div>
 @endsection

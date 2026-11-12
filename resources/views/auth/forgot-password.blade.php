@@ -3,8 +3,8 @@
 @section('title', 'Forgot Password')
 
 @section('content')
-    <h1 class="text-xl font-semibold">Lupa password</h1>
-    <p class="mt-1 text-sm text-muted">Masukkan email akun. Tautan reset akan dikirim melalui mailer yang dikonfigurasi.</p>
+    <h1 class="text-xl font-semibold">Forgot password</h1>
+    <p class="mt-1 text-sm text-muted">Enter your account email. A reset link will be sent through the configured mailer.</p>
 
     @if (session('status'))
         <x-ui.alert variant="success" class="mt-4">{{ session('status') }}</x-ui.alert>
@@ -17,6 +17,6 @@
             <input id="email" class="input" type="email" name="email" value="{{ old('email') }}" required autofocus>
         </x-ui.field>
 
-        <x-ui.button type="submit">Kirim tautan reset</x-ui.button>
+        <x-ui.button type="submit">Send reset link</x-ui.button>
     </form>
 @endsection

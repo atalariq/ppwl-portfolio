@@ -1,29 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Education — Portfolio')
+@section('title', 'Education — Atalariq Portfolio')
+@section('meta_description', 'Formal education and academic activities of Atalariq Barra Hadinugraha.')
 
 @section('content')
     <x-ui.page-header title="Education" description="Formal education and academic activities." />
 
-    <div class="mt-8 space-y-4">
+    <div class="mt-10 grid gap-4 sm:grid-cols-2">
         @forelse ($educations as $education)
-            <article class="card card-body">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <h2 class="text-lg font-semibold">{{ $education->institution }}</h2>
-                    <span class="text-sm text-muted">{{ $education->period }}</span>
-                </div>
-                <p class="mt-1 text-sm font-medium text-brand-700">{{ $education->program }}</p>
-
-                @if (! empty($education->details))
-                    <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-relaxed">
-                        @foreach ($education->details as $detail)
-                            <li>{{ $detail }}</li>
-                        @endforeach
-                    </ul>
-                @endif
-            </article>
+            <x-ui.entry-card
+                :period="$education->period"
+                :title="$education->institution"
+                :subtitle="$education->program"
+                :items="$education->details ?? []"
+            />
         @empty
-            <x-ui.empty-state title="Belum ada riwayat pendidikan" description="Data pendidikan akan tampil setelah seeder dijalankan." />
+            <x-ui.empty-state class="sm:col-span-2" title="No education history yet" description="Education entries will appear here once they are added." />
         @endforelse
     </div>
 @endsection

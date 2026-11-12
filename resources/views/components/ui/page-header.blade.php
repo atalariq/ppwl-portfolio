@@ -1,7 +1,10 @@
-@props(['title', 'description' => null])
+@props(['title', 'description' => null, 'eyebrow' => null])
 
 <header {{ $attributes->class('page-header') }}>
-    <div>
+    <div class="min-w-0">
+        @if ($eyebrow)
+            <p class="page-eyebrow">{{ $eyebrow }}</p>
+        @endif
         <h1 class="page-title">{{ $title }}</h1>
         @if ($description)
             <p class="page-description">{{ $description }}</p>

@@ -3,14 +3,14 @@
 @section('title', 'Login')
 
 @section('content')
-    <h1 class="text-xl font-semibold">Masuk</h1>
-    <p class="mt-1 text-sm text-muted">Gunakan akun pengelola untuk membuka area admin.</p>
+    <h1 class="text-xl font-semibold">Sign in</h1>
+    <p class="mt-1 text-sm text-muted">Use your admin account to manage the portfolio.</p>
 
     <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
         @csrf
 
-        <x-ui.field label="Email" name="email" :error="$errors->first('email')">
-            <input id="email" class="input" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+        <x-ui.field label="Email or username" name="login" :error="$errors->first('login')">
+            <input id="login" class="input" type="text" name="login" value="{{ old('login') }}" required autofocus autocomplete="username">
         </x-ui.field>
 
         <x-ui.field label="Password" name="password" :error="$errors->first('password')">
