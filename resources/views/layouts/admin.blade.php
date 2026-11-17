@@ -25,6 +25,7 @@
             <x-ui.sidebar-link :href="route('admin.technologies.index')" :active="request()->routeIs('admin.technologies.*')">Technologies</x-ui.sidebar-link>
             <x-ui.sidebar-link :href="route('admin.skills.index')" :active="request()->routeIs('admin.skills.*')">Skills</x-ui.sidebar-link>
             <x-ui.sidebar-link :href="route('admin.about.edit')" :active="request()->routeIs('admin.about.*')">About</x-ui.sidebar-link>
+            <x-ui.sidebar-link :href="route('admin.messages.index')" :active="request()->routeIs('admin.messages.*')">Messages</x-ui.sidebar-link>
             <x-ui.sidebar-link :href="route('admin.profile.edit')" :active="request()->routeIs('admin.profile.*')">Profile</x-ui.sidebar-link>
             <div class="my-3 border-t border-slate-800"></div>
             <x-ui.sidebar-link :href="route('projects.index')">View site</x-ui.sidebar-link>

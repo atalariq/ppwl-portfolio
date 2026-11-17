@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\ProfileController;
@@ -19,6 +21,11 @@ Route::get('/education', [PortfolioController::class, 'education'])->name('educa
 
 Route::get('/projects', [ProjectController::class, 'publicIndex'])->name('projects.index');
 Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
+
+Route::get('/contact', [ContactMessageController::class, 'create'])->name('contact');
+Route::post('/contact', [ContactMessageController::class, 'store'])
+    ->middleware('throttle:contact')
+    ->name('contact.store');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', fn () => redirect()->route('admin.dashboard'))->name('home');
@@ -69,6 +76,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('about', [AboutController::class, 'edit'])->name('about.edit');
     Route::put('about', [AboutController::class, 'update'])->name('about.update');
+
+    Route::get('messages', [AdminContactMessageController::class, 'index'])->name('messages.index');
+    Route::get('messages/{contactMessage}', [AdminContactMessageController::class, 'show'])->name('messages.show');
 
     Route::get('contacts/create', [ContactController::class, 'create'])->name('contacts.create');
     Route::post('contacts', [ContactController::class, 'store'])->name('contacts.store');

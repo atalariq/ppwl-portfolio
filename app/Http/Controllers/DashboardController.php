@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\ContactMessage;
 use App\Models\Project;
 use App\Models\ProjectImage;
 use App\Models\Skill;
@@ -21,6 +22,8 @@ class DashboardController extends Controller
             'totalTechnologies' => Technology::count(),
             'totalSkills' => Skill::count(),
             'totalGalleryImages' => ProjectImage::count(),
+            'totalMessages' => ContactMessage::count(),
+            'unreadMessages' => ContactMessage::unread()->count(),
             'latestProjects' => Project::with(['category', 'images'])->latest()->take(5)->get(),
             'skillsByCategory' => Skill::query()
                 ->selectRaw('category, count(*) as total')

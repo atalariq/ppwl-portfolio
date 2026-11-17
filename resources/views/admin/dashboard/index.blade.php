@@ -3,11 +3,13 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <x-ui.stat label="Projects" :value="$totalProjects" />
         <x-ui.stat label="Published" :value="$publishedProjects" tone="text-success" />
         <x-ui.stat label="Draft" :value="$draftProjects" tone="text-warning" />
         <x-ui.stat label="Skills" :value="$totalSkills" tone="text-brand-700" />
+        <x-ui.stat label="Messages" :value="$totalMessages" tone="text-brand-700" />
+        <x-ui.stat label="Unread messages" :value="$unreadMessages" tone="text-warning" />
     </div>
 
     <div class="mt-4 grid gap-4 sm:grid-cols-3">
