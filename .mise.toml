@@ -7,11 +7,11 @@ description = "Install dependencies, start the database, migrate, and build asse
 run = """
 set -eu
 [ -f .env ] || cp .env.example .env
+composer install --no-interaction --prefer-dist
 if ! grep -q '^APP_KEY=base64:' .env; then
   php artisan key:generate
 fi
 mise run db:up
-composer install --no-interaction --prefer-dist
 php artisan migrate --seed
 php artisan storage:link || true
 npm ci
