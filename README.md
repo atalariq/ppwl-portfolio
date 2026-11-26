@@ -33,6 +33,43 @@ Use the seeded accounts:
 Always use `127.0.0.1`, not `localhost`, so cookies, assets, and redirects stay on
 one host.
 
+## VS Code Dev Container (optional)
+
+The dev container provides the same PHP 8.5, Composer, Node 24, and MariaDB-based
+development environment on each machine. It is an alternative to the `mise`
+workflow, not a way to sync files between devices.
+
+Requirements: Docker Desktop with Docker Compose and VS Code with the Dev
+Containers extension. On Windows, use Docker Desktop's WSL 2 backend; keeping
+the repository in the WSL 2 filesystem is recommended for better file
+performance.
+
+1. Open the repository folder in VS Code and run **Dev Containers: Reopen in
+   Container** from the Command Palette.
+2. On first creation, the container installs dependencies, creates `.env`, runs
+   migrations and seeders, links storage, and builds assets. Its MariaDB runs
+   privately inside Compose and does not publish port 3306 on the host. It
+   derives an ignored `.env.devcontainer` from `.env`, leaving the host's `.env`
+   unchanged.
+3. In separate VS Code terminals, start Laravel and Vite:
+
+   ```sh
+   php artisan serve --host=0.0.0.0 --port=8000
+   npm run dev -- --host=0.0.0.0
+   ```
+
+4. Open <http://127.0.0.1:8000>.
+
+Each device has its own checkout, `.env`, database volume, and uploaded files.
+To switch devices without losing changes, commit and push on the current device,
+then pull on the next one. A local dev container does not provide live
+collaboration; use VS Code Live Share while both devices and the host are online
+if you need to edit the same workspace together.
+
+On the host, `mise run` activates the project's pinned tools. For direct PHP
+commands outside a `mise` task, use `mise x -- php ...` or activate mise in the
+shell with `mise activate`.
+
 ## Tasks
 
 | Command | Purpose |
@@ -109,6 +146,21 @@ with `podman build`.
 For a real deployment, set `APP_URL`, `APP_KEY`, database credentials, and
 `SESSION_SECURE_COOKIE=true` in `.env.prod`; do not commit it.
 
+For a temporary public preview, start the optional Cloudflare Quick Tunnel after
+the app stack is running:
+
+```sh
+docker compose -p ppwl-prod -f compose.prod.yaml --profile tunnel up -d cloudflared
+docker compose -p ppwl-prod -f compose.prod.yaml --profile tunnel logs -f cloudflared
+```
+
+Open the `trycloudflare.com` URL printed in the logs. Stop public access with
+`docker compose -p ppwl-prod -f compose.prod.yaml --profile tunnel stop cloudflared`.
+Use `podman-compose` instead of `docker compose` if using Podman. Quick Tunnels
+are temporary and public to anyone with the URL; do not use them for production
+or leave demo accounts/passwords enabled. The tunnel service is disabled unless
+the `tunnel` profile is explicitly selected.
+
 ## Tests and assets
 
 ```sh
@@ -126,7 +178,7 @@ Tests use in-memory SQLite through `phpunit.xml`; local development uses MariaDB
 - Views: `resources/views/`
 - Design system: `resources/css/app.css`, `resources/views/components/ui/`, `DESIGN.md`
 - Migrations and seeders: `database/`
-- Container files: `Dockerfile`, `compose.yaml`, `compose.prod.yaml`, `docker/`
+- Container files: `.devcontainer/`, `Dockerfile`, `compose.yaml`, `compose.prod.yaml`, `docker/`
 
 ## Changelog
 
