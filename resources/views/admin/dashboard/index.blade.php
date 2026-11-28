@@ -16,6 +16,8 @@
         <x-ui.stat label="Categories" :value="$totalCategories" tone="text-brand-700" />
         <x-ui.stat label="Technologies" :value="$totalTechnologies" tone="text-brand-700" />
         <x-ui.stat label="Gallery images" :value="$totalGalleryImages" tone="text-brand-700" />
+        <x-ui.stat label="Pending jobs" :value="$pendingJobs" tone="text-brand-700" />
+        <x-ui.stat label="Failed jobs" :value="$failedJobs" :tone="$failedJobs > 0 ? 'text-danger' : 'text-brand-700'" />
     </div>
 
     <x-ui.card class="mt-8" title="Portfolio cache" description="Status key cache yang dipakai halaman publik. Tombol membersihkan kelima key sekaligus.">

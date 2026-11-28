@@ -11,6 +11,8 @@ use App\Models\Technology;
 use App\Support\PortfolioCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -36,6 +38,8 @@ class DashboardController extends Controller
             'categories' => Category::withCount('projects')->orderByDesc('projects_count')->orderBy('name')->get(),
             'cacheStatus' => collect(PortfolioCache::KEYS)
                 ->mapWithKeys(fn (string $key) => [$key => Cache::has($key)]),
+            'pendingJobs' => Queue::size(),
+            'failedJobs' => DB::table('failed_jobs')->count(),
         ]);
     }
 

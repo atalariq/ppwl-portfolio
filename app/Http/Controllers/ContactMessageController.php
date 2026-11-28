@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendContactNotification;
 use App\Models\ContactMessage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,9 @@ class ContactMessageController extends Controller
             'message' => 'required|string|min:10|max:5000',
         ]);
 
-        ContactMessage::create($validated);
+        $contactMessage = ContactMessage::create($validated);
+
+        SendContactNotification::dispatch($contactMessage);
 
         return back()->with('success', 'Pesan berhasil dikirim. Terima kasih!');
     }
