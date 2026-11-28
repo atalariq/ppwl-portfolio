@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PortfolioCache;
 use Illuminate\Database\Eloquent\Model;
 
 class Education extends Model
@@ -15,5 +16,11 @@ class Education extends Model
         return [
             'details' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => PortfolioCache::forget(PortfolioCache::EDUCATIONS));
+        static::deleted(fn () => PortfolioCache::forget(PortfolioCache::EDUCATIONS));
     }
 }

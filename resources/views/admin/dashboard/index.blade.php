@@ -18,6 +18,26 @@
         <x-ui.stat label="Gallery images" :value="$totalGalleryImages" tone="text-brand-700" />
     </div>
 
+    <x-ui.card class="mt-8" title="Portfolio cache" description="Status key cache yang dipakai halaman publik. Tombol membersihkan kelima key sekaligus.">
+        <x-slot:actions>
+            <form method="POST" action="{{ route('admin.cache.clear') }}">
+                @csrf
+                <x-ui.button type="submit" variant="secondary" size="sm">Bersihkan cache</x-ui.button>
+            </form>
+        </x-slot:actions>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+            @foreach ($cacheStatus as $key => $cached)
+                <div class="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
+                    <code class="text-xs">{{ $key }}</code>
+                    <x-ui.badge :variant="$cached ? 'success' : 'warning'">
+                        {{ $cached ? 'Tersimpan' : 'Kosong' }}
+                    </x-ui.badge>
+                </div>
+            @endforeach
+        </div>
+    </x-ui.card>
+
     <div class="mt-8 grid gap-6 lg:grid-cols-2">
         <x-ui.card title="Skills by category" description="A count of capabilities, without subjective scores.">
             <table class="table">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Skill;
+use App\Support\PortfolioCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -31,6 +32,8 @@ class SkillController extends Controller
 
         Skill::create($request->only(['name', 'category']));
 
+        PortfolioCache::forget(PortfolioCache::SKILLS);
+
         return redirect()->route('admin.skills.index')->with('success', 'Skill created.');
     }
 
@@ -48,6 +51,8 @@ class SkillController extends Controller
 
         $skill->update($request->only(['name', 'category']));
 
+        PortfolioCache::forget(PortfolioCache::SKILLS);
+
         return redirect()->route('admin.skills.index')->with('success', 'Skill updated.');
     }
 
@@ -59,6 +64,8 @@ class SkillController extends Controller
         ]);
 
         $skill->update($request->only(['name', 'category']));
+
+        PortfolioCache::forget(PortfolioCache::SKILLS);
 
         return back()->with('success', 'Skill updated.');
     }
@@ -72,6 +79,8 @@ class SkillController extends Controller
         ]);
 
         Skill::query()->whereIn('id', $validated['ids'])->delete();
+
+        PortfolioCache::forget(PortfolioCache::SKILLS);
 
         return back()->with('success', 'Selected skills deleted.');
     }
@@ -107,12 +116,16 @@ class SkillController extends Controller
             $created++;
         }
 
+        PortfolioCache::forget(PortfolioCache::SKILLS);
+
         return back()->with('success', "{$created} skills added, {$skipped} skipped.");
     }
 
     public function destroy(Skill $skill): RedirectResponse
     {
         $skill->delete();
+
+        PortfolioCache::forget(PortfolioCache::SKILLS);
 
         return redirect()->route('admin.skills.index')->with('success', 'Skill deleted.');
     }

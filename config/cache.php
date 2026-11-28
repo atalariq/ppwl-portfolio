@@ -1,5 +1,14 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Education;
+use App\Models\Experience;
+use App\Models\Project;
+use App\Models\ProjectImage;
+use App\Models\Skill;
+use App\Models\Technology;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 
 return [
@@ -131,6 +140,18 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    'serializable_classes' => [
+        Category::class,
+        Education::class,
+        Experience::class,
+        Project::class,
+        ProjectImage::class,
+        Skill::class,
+        Technology::class,
+        Carbon\Carbon::class,
+        Collection::class,
+        Pivot::class,
+        Illuminate\Support\Carbon::class,
+    ],
 
 ];

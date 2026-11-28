@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\ProjectImage;
+use App\Support\PortfolioCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -37,6 +38,8 @@ class ProjectGalleryController extends Controller
             ]);
         }
 
+        PortfolioCache::forget(PortfolioCache::FEATURED);
+
         return back()->with('success', 'Gallery images uploaded.');
     }
 
@@ -50,6 +53,8 @@ class ProjectGalleryController extends Controller
 
         $image->update($validated);
 
+        PortfolioCache::forget(PortfolioCache::FEATURED);
+
         return back()->with('success', 'Image caption updated.');
     }
 
@@ -59,6 +64,8 @@ class ProjectGalleryController extends Controller
 
         Storage::disk('public')->delete($image->image);
         $image->delete();
+
+        PortfolioCache::forget(PortfolioCache::FEATURED);
 
         return back()->with('success', 'Gallery image deleted.');
     }

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Project;
 use App\Models\Technology;
+use App\Support\PortfolioCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -30,7 +32,7 @@ class ProjectController extends Controller
 
         return view('portfolio.projects', [
             'projects' => $projects,
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => Cache::remember(PortfolioCache::CATEGORIES, 3600, fn () => Category::orderBy('name')->get()),
             'technologies' => Technology::orderBy('name')->get(),
         ]);
     }
@@ -75,6 +77,8 @@ class ProjectController extends Controller
         $project = Project::create($validated);
         $project->technologies()->sync($technologyIds);
 
+        PortfolioCache::forget(PortfolioCache::FEATURED);
+
         return redirect()->route('admin.projects.index')->with('success', 'Project created.');
     }
 
@@ -118,6 +122,8 @@ class ProjectController extends Controller
         $project->update($validated);
         $project->technologies()->sync($technologyIds);
 
+        PortfolioCache::forget(PortfolioCache::FEATURED);
+
         return redirect()->route('admin.projects.index')->with('success', 'Project updated.');
     }
 
@@ -133,6 +139,8 @@ class ProjectController extends Controller
 
         $validated['is_featured'] = $request->boolean('is_featured');
         $project->update($validated);
+
+        PortfolioCache::forget(PortfolioCache::FEATURED);
 
         return back()->with('success', 'Project updated.');
     }
@@ -163,6 +171,8 @@ class ProjectController extends Controller
                 $this->deleteProject($project);
             }
         }
+
+        PortfolioCache::forget(PortfolioCache::FEATURED);
 
         $message = match ($validated['action']) {
             'publish' => 'Selected projects published.',
@@ -217,5 +227,7 @@ class ProjectController extends Controller
 
         $project->technologies()->detach();
         $project->delete();
+
+        PortfolioCache::forget(PortfolioCache::FEATURED);
     }
 }

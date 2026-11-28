@@ -8,6 +8,9 @@ use App\Models\Project;
 use App\Models\ProjectImage;
 use App\Models\Skill;
 use App\Models\Technology;
+use App\Support\PortfolioCache;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -31,6 +34,15 @@ class DashboardController extends Controller
                 ->orderBy('category')
                 ->get(),
             'categories' => Category::withCount('projects')->orderByDesc('projects_count')->orderBy('name')->get(),
+            'cacheStatus' => collect(PortfolioCache::KEYS)
+                ->mapWithKeys(fn (string $key) => [$key => Cache::has($key)]),
         ]);
+    }
+
+    public function clearCache(): RedirectResponse
+    {
+        PortfolioCache::forget(...PortfolioCache::KEYS);
+
+        return back()->with('success', 'Cache portofolio dibersihkan.');
     }
 }

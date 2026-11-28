@@ -30,6 +30,7 @@ Route::post('/contact', [ContactMessageController::class, 'store'])
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', fn () => redirect()->route('admin.dashboard'))->name('home');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('cache/clear', [DashboardController::class, 'clearCache'])->name('cache.clear');
 
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/create', [ProjectController::class, 'create'])->name('projects.create');

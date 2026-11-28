@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'About — Atalariq Portfolio')
-@section('meta_description', $profile->summary)
+@section('meta_description', (string) $profile->summary)
 
 @section('content')
     <x-ui.page-header title="About" :description="$profile->summary" />

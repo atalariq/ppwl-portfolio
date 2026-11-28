@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Support\PortfolioCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -30,6 +31,8 @@ class CategoryController extends Controller
 
         Category::create($request->only('name'));
 
+        PortfolioCache::forget(PortfolioCache::CATEGORIES, PortfolioCache::FEATURED);
+
         return redirect()->route('admin.categories.index')->with('success', 'Category created.');
     }
 
@@ -46,6 +49,8 @@ class CategoryController extends Controller
 
         $category->update($request->only('name'));
 
+        PortfolioCache::forget(PortfolioCache::CATEGORIES, PortfolioCache::FEATURED);
+
         return redirect()->route('admin.categories.index')->with('success', 'Category updated.');
     }
 
@@ -56,6 +61,8 @@ class CategoryController extends Controller
         ]);
 
         $category->update($request->only('name'));
+
+        PortfolioCache::forget(PortfolioCache::CATEGORIES, PortfolioCache::FEATURED);
 
         return back()->with('success', 'Category updated.');
     }
@@ -69,6 +76,8 @@ class CategoryController extends Controller
         ]);
 
         Category::query()->whereIn('id', $validated['ids'])->delete();
+
+        PortfolioCache::forget(PortfolioCache::CATEGORIES, PortfolioCache::FEATURED);
 
         return back()->with('success', 'Selected categories deleted.');
     }
@@ -95,12 +104,16 @@ class CategoryController extends Controller
             $created++;
         }
 
+        PortfolioCache::forget(PortfolioCache::CATEGORIES, PortfolioCache::FEATURED);
+
         return back()->with('success', "{$created} categories added, {$skipped} skipped.");
     }
 
     public function destroy(Category $category): RedirectResponse
     {
         $category->delete();
+
+        PortfolioCache::forget(PortfolioCache::CATEGORIES, PortfolioCache::FEATURED);
 
         return redirect()->route('admin.categories.index')->with('success', 'Category deleted.');
     }
