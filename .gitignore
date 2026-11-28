@@ -2,6 +2,7 @@
 .DS_Store
 .env
 .env.prod
+.env.devcontainer
 .env.backup
 .env.local
 .env.*.local

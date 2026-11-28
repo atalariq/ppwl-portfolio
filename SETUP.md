@@ -41,6 +41,35 @@ Use the seeded admin account from `README.md` (`admin` / `password123`).
 mise run db:down
 ```
 
+## Optional: VS Code Dev Container
+
+Install Docker Desktop with Compose and the VS Code Dev Containers extension.
+On Windows, enable Docker Desktop's WSL 2 backend; keeping the repository in
+the WSL 2 filesystem is recommended for better file performance. Open the
+repository in VS Code and choose **Dev Containers: Reopen in Container**. The
+first container creation installs Composer and npm dependencies, creates `.env`
+if needed, derives the ignored `.env.devcontainer` for the container without
+changing host `.env`, migrates and seeds MariaDB, links storage, and builds
+assets. MariaDB is private to the Compose network, so it does not need host port
+3306 and will not conflict with `mise run dev`.
+
+Start the application in separate terminals inside the container:
+
+```sh
+php artisan serve --host=0.0.0.0 --port=8000
+npm run dev -- --host=0.0.0.0
+```
+
+Open <http://127.0.0.1:8000>. When switching from the lab PC to the laptop, push
+your Git changes before leaving and pull them on the other device. The container,
+database, `.env`, and uploaded files are local to each machine; this does not
+provide live collaboration. Use VS Code Live Share if you need both devices to
+edit one active workspace at the same time.
+
+The Dev Container is optional; the `mise` workflow above remains supported. For
+direct PHP commands on the host, use `mise x -- php ...` or activate mise with
+`mise activate`.
+
 ## Production / demo container
 
 ```sh
@@ -52,6 +81,21 @@ podman-compose -p ppwl-prod -f compose.prod.yaml run --rm app php artisan migrat
 
 Open <http://127.0.0.1:8080>. Replace `podman-compose` with `docker compose` if
 using Docker. The app runs PHP-FPM behind nginx; `Dockerfile` is Podman-compatible.
+
+To make a temporary public preview, start the optional Cloudflare Quick Tunnel
+after the app stack is running:
+
+```sh
+docker compose -p ppwl-prod -f compose.prod.yaml --profile tunnel up -d cloudflared
+docker compose -p ppwl-prod -f compose.prod.yaml --profile tunnel logs -f cloudflared
+```
+
+Open the `trycloudflare.com` URL in the logs. Stop the tunnel with
+`docker compose -p ppwl-prod -f compose.prod.yaml --profile tunnel stop cloudflared`.
+Replace `docker compose` with `podman-compose` when using Podman. Anyone with
+the URL can access the site, so use this only for temporary previews and disable
+or change demo credentials first. The tunnel stays off unless the `tunnel`
+profile is explicitly enabled.
 
 ## Upload limits
 

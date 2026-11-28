@@ -7,11 +7,19 @@ services:
       - .env.prod
     ports:
       - "8080:80"
+      - "8081:8080"
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - app-storage:/var/www/html/storage/app/public
+
+  cloudflared:
+    image: docker.io/cloudflare/cloudflared:latest
+    profiles: ["tunnel"]
+    command: tunnel --no-autoupdate --url http://app:80
+    depends_on:
+      - app
 
   db:
     image: docker.io/library/mariadb:11
